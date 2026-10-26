@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APDCL Goalpara - Leave Management System</title>
+  <style>
+    :root {
+      --primary: #0056b3;
+      --primary-hover: #004085;
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --text: #212529;
+      --muted: #6c757d;
+      --border: #dee2e6;
+      --danger: #dc3545;
+      --success: #28a745;
+      --warning: #ffc107;
+      --holiday: #ffe3e3;
+      --weekend: #f1f3f5;
+      --selected: #0056b3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 60px; }
+    
+    header { background: var(--primary); color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.1rem; font-weight: 600; }
+    header .user-info { font-size: 0.85rem; text-align: right; }
+    
+    .container { max-width: 900px; margin: 15px auto; padding: 0 12px; }
+    .card { background: var(--surface); border-radius: 8px; border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    
+    /* Nav Tabs */
+    .tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
+    .tab-btn { background: none; border: none; padding: 8px 14px; font-weight: 600; font-size: 0.9rem; color: var(--muted); cursor: pointer; border-radius: 4px; white-space: nowrap; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    
+    /* Balance Counters */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center; }
+    .stat-val { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; }
+
+    /* Calendar Grid */
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 600; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+    .cal-day-name { font-size: 0.75rem; font-weight: 700; color: var(--muted); padding: 6px 0; }
+    .cal-cell { aspect-ratio: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; cursor: pointer; user-select: none; background: #fff; }
+    .cal-cell.other-month { opacity: 0.3; pointer-events: none; }
+    .cal-cell.weekend { background: var(--weekend); color: #adb5bd; }
+    .cal-cell.holiday { background: var(--holiday); color: var(--danger); font-weight: 700; }
+    .cal-cell.selected { background: var(--selected) !important; color: #fff !important; }
+    .cal-cell.in-range { background: #e7f1ff; }
+    
+    /* Form & Controls */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+    .btn { display: inline-block; width: 100%; padding: 10px; font-size: 0.95rem; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; background: var(--primary); color: #fff; text-align: center; }
+    .btn:disabled { background: var(--muted); cursor: not-allowed; }
+    .btn-danger { background: var(--danger); }
+    .btn-success { background: var(--success); }
+    
+    /* Notices & Alerts */
+    .notice { padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px; }
+    .notice-warn { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .notice-info { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+
+    /* Tables */
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { background: #f8f9fa; font-weight: 600; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .badge-Applied { background: #ffeeba; color: #856404; }
+    .badge-Recommended { background: #cce5ff; color: #004085; }
+    .badge-Approved { background: #d4edda; color: #155724; }
+    .badge-Rejected { background: #f8d7da; color: #721c24; }
+    .badge-Returned { background: #e2e3e5; color: #383d41; }
+    .badge-Cancelled { background: #e9ecef; color: #6c757d; }
+
+    /* Modals / Gates */
+    .gate { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+    .gate-card { background: #fff; width: 100%; max-width: 360px; border-radius: 8px; padding: 20px; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div>
+      <h1>APDCL Leave System</h1>
+      <small style="opacity: 0.85;">Goalpara Electrical Sub-Division</small>
+    </div>
+    <div id="userHeader" class="user-info" style="display:none;">
+      <span id="headerUserName" style="font-weight:600;"></span><br>
+      <a href="#" onclick="logout()" style="color:#fff; text-decoration: underline; font-size: 0.75rem;">Logout</a>
+    </div>
+  </header>
+
+  <!-- Login Modal -->
+  <div id="loginGate" class="gate">
+    <div class="gate-card">
+      <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: var(--primary);">Office Login</h2>
+      <div class="form-group">
+        <label>ERP ID (8 digits)</label>
+        <input type="text" id="loginErp" placeholder="e.g. 40003847" maxlength="8">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Default: apdcl">
+      </div>
+      <button class="btn" id="loginBtn" onclick="submitLogin()">Sign In</button>
+      <div id="loginMsg" style="margin-top:10px; font-size: 0.85rem; color: var(--danger);"></div>
+    </div>
+  </div>
+
+  <!-- Forced Password Change Modal -->
+  <div id="passChangeGate" class="gate" style="display: none;">
+    <div class="gate-card">
+      <h2 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--danger);">Change Default Password</h2>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">For security, please set a new personal password before proceeding.</p>
+      <div class="form-group">
+        <label>New Password (min 5 chars)</label>
+        <input type="password" id="newPass">
+      </div>
+      <button class="btn btn-danger" onclick="submitPasswordChange()">Update & Continue</button>
+      <div id="changePassMsg" style="margin-top:8px; font-size: 0.85rem; color: var(--danger);"></div>
+    </div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div class="container" id="mainApp" style="display:none;">
+    
+    <!-- Balance Summary -->
+    <div class="summary-grid">
+      <div class="stat-box">
+        <div class="stat-val" id="balRemaining">-</div>
+        <div class="stat-lbl">Available CL</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="balPending">-</div>
+        <div class="stat-lbl">In Process</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="balApproved">-</div>
+        <div class="stat-lbl">Availed CL</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="balOpening">15</div>
+        <div class="stat-lbl">Opening Entitlement</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('apply')">Apply CL</button>
+      <button class="tab-btn" onclick="switchTab('history')">My Applications</button>
+      <button class="tab-btn" id="inboxTabBtn" onclick="switchTab('inbox')" style="display:none;">Inbox (<span id="inboxCount">0</span>)</button>
+    </div>
+
+    <!-- Tab 1: Apply CL -->
+    <div id="view-apply" class="tab-view">
+      <div class="card">
+        <div class="cal-header">
+          <button class="btn" style="width: auto; padding: 4px 10px;" onclick="changeMonth(-1)">&lt;</button>
+          <span id="calMonthYear"></span>
+          <button class="btn" style="width: auto; padding: 4px 10px;" onclick="changeMonth(1)">&gt;</button>
+        </div>
+        
+        <div class="cal-grid" id="calendarDays">
+          <div class="cal-day-name">Su</div>
+          <div class="cal-day-name">Mo</div>
+          <div class="cal-day-name">Tu</div>
+          <div class="cal-day-name">We</div>
+          <div class="cal-day-name">Th</div>
+          <div class="cal-day-name">Fr</div>
+          <div class="cal-day-name">Sa</div>
+        </div>
+        <div class="cal-grid" id="calendarCells"></div>
+        <small style="display:block; margin-top:8px; font-size:0.75rem; color:var(--muted);">* Pink = Holiday, Grey = 2nd/4th Sat & Sun. Tap start date then end date.</small>
+      </div>
+
+      <div class="card">
+        <div id="calcBanner" class="notice notice-info" style="display:none;">
+          Selected: <strong id="calcRange"></strong> | Counted Working Days: <strong id="calcDays">0</strong>
+        </div>
+        <div id="warnBanner" class="notice notice-warn" style="display:none;"></div>
+
+        <div class="form-group">
+          <label>Reason for Leave</label>
+          <textarea id="leaveReason" rows="2" placeholder="State reason for absence"></textarea>
+        </div>
+        <button class="btn" id="submitApplyBtn" onclick="submitCLApplication()" disabled>Submit Application</button>
+        <div id="applyMsg" style="margin-top:8px; font-size: 0.85rem;"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: My Applications History -->
+    <div id="view-history" class="tab-view" style="display:none;">
+      <div class="card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Dates</th>
+                <th>Days</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="myLeavesBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Approver Inbox -->
+    <div id="view-inbox" class="tab-view" style="display:none;">
+      <div class="card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Applicant</th>
+                <th>Dates</th>
+                <th>Days</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="inboxBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Paste your deployed Google Apps Script Web App URL (/exec) here:
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhTqrIAdOgIiWR9Swjbf68q9HoC0gPt6TZZHceUAQtMl9NPsXhSkl7WNpOXtw6VK7F/exec";
+
+    let state = {
+      token: localStorage.getItem('apdcl_token') || null,
+      user: JSON.parse(localStorage.getItem('apdcl_user') || 'null'),
+      holidays: {},
+      selectedStart: null,
+      selectedEnd: null,
+      currentCalDate: new Date(2026, 0, 1),
+      countedDays: 0,
+      adjacencyWarning: ""
+    };
+
+    window.addEventListener('load', () => {
+      if (state.token && state.user) {
+        initSession();
+      }
+    });
+
+    async function apiCall(action, payload = {}) {
+      payload.action = action;
+      payload.token = state.token;
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
+
+    async function submitLogin() {
+      const erp = document.getElementById('loginErp').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      const msg = document.getElementById('loginMsg');
+      const btn = document.getElementById('loginBtn');
+
+      if (!erp || !pass) return msg.innerText = "Please provide ERP and Password.";
+      btn.disabled = true;
+      btn.innerText = "Signing in...";
+
+      try {
+        const res = await apiCall('login', { erp: erp, password: pass });
+        if (!res.success) throw new Error(res.error);
+        state.token = res.token;
+        state.user = res.user;
+        localStorage.setItem('apdcl_token', res.token);
+        localStorage.setItem('apdcl_user', JSON.stringify(res.user));
+
+        document.getElementById('loginGate').style.display = 'none';
+        if (res.user.mustChange) {
+          document.getElementById('passChangeGate').style.display = 'flex';
+        } else {
+          initSession();
+        }
+      } catch (err) {
+        msg.innerText = err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Sign In";
+      }
+    }
+
+    async function submitPasswordChange() {
+      const newPass = document.getElementById('newPass').value;
+      const msg = document.getElementById('changePassMsg');
+      if (newPass.length < 5) return msg.innerText = "Minimum length is 5 characters.";
+
+      const res = await apiCall('changePassword', { newPassword: newPass });
+      if (res.success) {
+        document.getElementById('passChangeGate').style.display = 'none';
+        initSession();
+      } else {
+        msg.innerText = res.error;
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    async function initSession() {
+      document.getElementById('loginGate').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('userHeader').style.display = 'block';
+      document.getElementById('headerUserName').innerText = `${state.user.name} (${state.user.desig})`;
+
+      if (['JM', 'SMR', 'SDE', 'ADMIN'].includes(state.user.role)) {
+        document.getElementById('inboxTabBtn').style.display = 'block';
+      }
+
+      await loadDashboard();
+      renderCalendar();
+    }
+
+    async function loadDashboard() {
+      const res = await apiCall('getDashboardData');
+      if (!res.success) return logout();
+
+      // Set Balances
+      document.getElementById('balOpening').innerText = res.balance.opening;
+      document.getElementById('balApproved').innerText = res.balance.approved;
+      document.getElementById('balPending').innerText = res.balance.pending;
+      document.getElementById('balRemaining').innerText = res.balance.remaining;
+
+      // Map holidays
+      state.holidays = {};
+      res.holidays.forEach(h => state.holidays[h.date] = h);
+
+      // Render My Leaves
+      const tbody = document.getElementById('myLeavesBody');
+      tbody.innerHTML = res.myLeaves.map(app => `
+        <tr>
+          <td><strong>${app.appId}</strong></td>
+          <td>${app.from} to ${app.to}</td>
+          <td>${app.days}</td>
+          <td><span class="badge badge-${app.status}">${app.status}</span></td>
+          <td>${app.reason}</td>
+          <td>${(app.status === 'Applied' || app.status === 'Recommended') ? 
+            `<button class="btn btn-danger" style="padding:4px 8px; width:auto; font-size:0.75rem;" onclick="cancelApp('${app.appId}')">Cancel</button>` : ''}</td>
+        </tr>
+      `).join('');
+
+      // Render Inbox
+      const inboxBody = document.getElementById('inboxBody');
+      document.getElementById('inboxCount').innerText = res.pendingForMe.length;
+      inboxBody.innerHTML = res.pendingForMe.map(app => `
+        <tr>
+          <td><strong>${app.name}</strong><br><small>${app.erp}</small></td>
+          <td>${app.from} to ${app.to}</td>
+          <td>${app.days}</td>
+          <td><span class="badge badge-${app.status}">${app.status}</span></td>
+          <td>${app.reason}${app.warning ? `<br><small style="color:var(--danger)">${app.warning}</small>` : ''}</td>
+          <td>
+            ${state.user.role === 'SDE' ? 
+              `<button class="btn btn-success" style="padding:4px 8px; width:auto; font-size:0.75rem;" onclick="actionApp('${app.appId}', 'Approve')">Approve</button>
+               <button class="btn btn-danger" style="padding:4px 8px; width:auto; font-size:0.75rem;" onclick="actionApp('${app.appId}', 'Reject')">Reject</button>` :
+              `<button class="btn btn-success" style="padding:4px 8px; width:auto; font-size:0.75rem;" onclick="actionApp('${app.appId}', 'Recommend')">Forward</button>
+               <button class="btn btn-danger" style="padding:4px 8px; width:auto; font-size:0.75rem;" onclick="actionApp('${app.appId}', 'Return')">Return</button>`
+            }
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
+      document.getElementById(`view-${name}`).style.display = 'block';
+      event.target.classList.add('active');
+    }
+
+    // Calendar Engine
+    function renderCalendar() {
+      const container = document.getElementById('calendarCells');
+      container.innerHTML = '';
+      const year = state.currentCalDate.getFullYear();
+      const month = state.currentCalDate.getMonth();
+      const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Lead-in blanks
+      for (let i = 0; i < firstDay; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell other-month';
+        container.appendChild(cell);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dObj = new Date(year, month, d);
+        const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell';
+        cell.innerText = d;
+
+        // APDCL weekend logic
+        const dow = dObj.getDay();
+        const satIdx = Math.ceil(d / 7);
+        const isAPDCLWeekend = (dow === 0) || (dow === 6 && (satIdx === 2 || satIdx === 4));
+        const isHoliday = state.holidays[dStr] && state.holidays[dStr].type === 'Holiday';
+
+        if (isHoliday) cell.classList.add('holiday');
+        else if (isAPDCLWeekend) cell.classList.add('weekend');
+
+        if (state.selectedStart && dStr === state.selectedStart) cell.classList.add('selected');
+        if (state.selectedEnd && dStr === state.selectedEnd) cell.classList.add('selected');
+        if (state.selectedStart && state.selectedEnd && dStr > state.selectedStart && dStr < state.selectedEnd) {
+          cell.classList.add('in-range');
+        }
+
+        cell.onclick = () => onDateClicked(dStr, isAPDCLWeekend || isHoliday);
+        container.appendChild(cell);
+      }
+    }
+
+    function changeMonth(delta) {
+      state.currentCalDate.setMonth(state.currentCalDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function onDateClicked(dateStr, isNonWorking) {
+      if (!state.selectedStart || (state.selectedStart && state.selectedEnd)) {
+        state.selectedStart = dateStr;
+        state.selectedEnd = null;
+      } else {
+        if (dateStr < state.selectedStart) {
+          state.selectedStart = dateStr;
+          state.selectedEnd = null;
+        } else {
+          state.selectedEnd = dateStr;
+        }
+      }
+      evaluateSelection();
+      renderCalendar();
+    }
+
+    function evaluateSelection() {
+      const banner = document.getElementById('calcBanner');
+      const warnBanner = document.getElementById('warnBanner');
+      const submitBtn = document.getElementById('submitApplyBtn');
+      warnBanner.style.display = 'none';
+
+      if (!state.selectedStart) {
+        banner.style.display = 'none';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      const endDate = state.selectedEnd || state.selectedStart;
+      document.getElementById('calcRange').innerText = `${state.selectedStart} to ${endDate}`;
+      
+      // Calculate working days in range
+      let cur = new Date(state.selectedStart);
+      const end = new Date(endDate);
+      let workingDays = 0;
+
+      while (cur <= end) {
+        const dStr = cur.toISOString().slice(0,10);
+        const dow = cur.getDay();
+        const satIdx = Math.ceil(cur.getDate() / 7);
+        const isNonWork = (dow === 0) || (dow === 6 && (satIdx === 2 || satIdx === 4)) || 
+                          (state.holidays[dStr] && state.holidays[dStr].type === 'Holiday');
+        if (!isNonWork) workingDays++;
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      state.countedDays = workingDays;
+      document.getElementById('calcDays').innerText = workingDays;
+      banner.style.display = 'block';
+
+      // Validation
+      if (workingDays < 1 || workingDays > 3) {
+        warnBanner.innerText = "Casual Leave can only be applied for 1 to 3 working days.";
+        warnBanner.style.display = 'block';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      // Check adjacency
+      const dayBefore = new Date(state.selectedStart);
+      dayBefore.setDate(dayBefore.getDate() - 1);
+      const dayAfter = new Date(endDate);
+      dayAfter.setDate(dayAfter.getDate() + 1);
+
+      state.adjacencyWarning = "";
+      if (isDateNonWorking(dayBefore) || isDateNonWorking(dayAfter)) {
+        state.adjacencyWarning = "Note: CL is adjacent to Sunday/Holiday/2nd/4th Sat.";
+        warnBanner.innerText = state.adjacencyWarning + " (The SDE will see this remark).";
+        warnBanner.style.display = 'block';
+      }
+
+      submitBtn.disabled = false;
+    }
+
+    function isDateNonWorking(dObj) {
+      const dStr = dObj.toISOString().slice(0,10);
+      const dow = dObj.getDay();
+      const satIdx = Math.ceil(dObj.getDate() / 7);
+      return (dow === 0) || (dow === 6 && (satIdx === 2 || satIdx === 4)) || 
+             (state.holidays[dStr] && state.holidays[dStr].type === 'Holiday');
+    }
+
+    async function submitCLApplication() {
+      const btn = document.getElementById('submitApplyBtn');
+      const msg = document.getElementById('applyMsg');
+      const reason = document.getElementById('leaveReason').value.trim();
+
+      if (!reason) return msg.innerText = "Please specify a reason.";
+      btn.disabled = true;
+
+      const payload = {
+        from: state.selectedStart,
+        to: state.selectedEnd || state.selectedStart,
+        daysCounted: state.countedDays,
+        halfDay: false,
+        reason: reason,
+        warning: state.adjacencyWarning
+      };
+
+      const res = await apiCall('applyCL', payload);
+      if (res.success) {
+        msg.style.color = "var(--success)";
+        msg.innerText = "Application submitted successfully!";
+        state.selectedStart = null;
+        state.selectedEnd = null;
+        document.getElementById('leaveReason').value = "";
+        await loadDashboard();
+        renderCalendar();
+      } else {
+        msg.style.color = "var(--danger)";
+        msg.innerText = res.error;
+      }
+      btn.disabled = false;
+    }
+
+    async function actionApp(appId, action) {
+      const remarks = prompt(`Enter optional remarks for ${action}:`) || "";
+      const res = await apiCall('takeAction', { appId, action, remarks });
+      if (res.success) await loadDashboard();
+      else alert(res.error);
+    }
+
+    async function cancelApp(appId) {
+      if (!confirm("Are you sure you want to cancel this application?")) return;
+      const res = await apiCall('cancelApplication', { appId });
+      if (res.success) await loadDashboard();
+      else alert(res.error);
+    }
+  </script>
+</body>
+</html>
