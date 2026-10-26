@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0f4c81">
   <title>APDCL Leave Portal - GESD</title>
-  
+
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="APDCL Leave">
-  <link rel="icon" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
-  <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     :root {
@@ -36,108 +35,334 @@
       --rh-txt: #92400e;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding: 12px; display: flex; flex-direction: column; align-items: center; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
     .hidden { display: none !important; }
 
-    /* Install Banner */
+    /* PWA Install Banner */
     #installAppBtn {
-      width: 100%; max-width: 520px; padding: 14px; background-color: #10b981;
-      color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold;
-      cursor: pointer; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%;
+      max-width: 520px;
+      padding: 14px;
+      background-color: #10b981;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .app-card {
-      background: var(--card-bg); width: 100%; max-width: 520px;
-      border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-      padding: 24px 18px; border: 1px solid #f1f5f9; margin-bottom: 16px;
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      padding: 24px 18px;
+      border: 1px solid #f1f5f9;
+      margin-bottom: 16px;
     }
 
-    .brand-header { text-align: center; margin-bottom: 18px; }
-    .brand-header h1 { font-size: 19px; font-weight: 700; color: var(--primary); }
-    .brand-header p { font-size: 13px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+    .brand-header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
 
-    /* Inputs & Buttons */
+    .brand-logo {
+      height: 56px;
+      width: 56px;
+      border-radius: 12px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+
+    .brand-header h1 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .brand-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    /* Form Fields */
     .styled-input {
-      width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid var(--border);
-      font-size: 15px; outline: none; transition: 0.2s; background: #fafafa; margin-bottom: 12px;
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s;
+      background: #fafafa;
+      margin-bottom: 12px;
     }
-    .styled-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
-    
+
+    .styled-input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+    }
+
     .btn {
-      width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 15px;
-      font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center;
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
     }
-    .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.2); }
-    .btn-primary:active { background: var(--primary-hover); transform: scale(0.99); }
-    .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+    }
+
+    .btn-primary:active {
+      background: var(--primary-hover);
+      transform: scale(0.99);
+    }
+
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
     .btn-danger { background: var(--danger); color: white; }
     .btn-success { background: var(--success); color: white; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; width: auto; display: inline-block; }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+      width: auto;
+      display: inline-block;
+    }
 
-    /* Summary Chips */
-    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
-    .stat-chip { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 4px; text-align: center; }
-    .stat-chip .val { font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1.1; }
-    .stat-chip .lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+    /* Metric Summary Chips */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .stat-chip {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 4px;
+      text-align: center;
+    }
+
+    .stat-chip .val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .stat-chip .lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
 
     /* Tab Switcher */
-    .tabs-container { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; gap: 4px; }
-    .tab {
-      flex: 1; text-align: center; padding: 10px 4px; font-size: 13px; font-weight: 700;
-      color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;
+    .tabs-container {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 16px;
+      gap: 4px;
     }
-    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 4px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: 0.2s;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
 
     /* Calendar Grid */
-    .cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cal-title { font-size: 16px; font-weight: 700; color: var(--primary); }
-    .nav-arrow { background: #f1f5f9; border: none; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 15px; font-weight: bold; color: var(--primary); }
-
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-    .cal-head { font-size: 11px; font-weight: 700; color: var(--text-muted); padding-bottom: 6px; text-transform: uppercase; }
-    
-    .cal-cell {
-      position: relative; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; border-radius: 10px; border: 1px solid var(--border);
-      background: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; user-select: none;
+    .cal-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
+
+    .cal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-arrow {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+    }
+
+    .cal-head {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .cal-cell {
+      position: relative;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+
     .cal-cell.empty { border: none; background: transparent; cursor: default; }
     .cal-cell.holiday { background: var(--holiday-bg); color: var(--holiday-txt); border-color: #fecaca; }
     .cal-cell.weekend { background: var(--weekend-bg); color: var(--weekend-txt); }
     .cal-cell.rh { background: var(--rh-bg); color: var(--rh-txt); border-color: #fde68a; }
     .cal-cell.selected { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
     .cal-cell.in-range { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+
     .cal-cell.today::after {
-      content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--primary);
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--primary);
     }
     .cal-cell.selected.today::after { background: #ffffff; }
 
-    /* Tooltip / Inspection Bar */
+    /* Day Inspection Bar */
     .day-preview-bar {
-      margin-top: 12px; padding: 10px 14px; border-radius: 10px; font-size: 12px;
-      font-weight: 600; text-align: center; background: #f8fafc; border: 1px dashed var(--border); color: var(--text-muted);
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
     }
 
-    /* Range Alert Bar */
+    /* Calculation & Warning Cards */
     .range-summary-card {
-      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px;
-      padding: 12px 14px; margin-top: 14px; font-size: 13px; color: #1e40af; line-height: 1.5;
-    }
-    .warn-card {
-      background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
-      padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #92400e; font-weight: 500;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #1e40af;
+      line-height: 1.5;
     }
 
-    /* Leaves & Inbox Cards */
-    .item-card {
-      border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px;
-      background: #fafafa; display: flex; flex-direction: column; gap: 6px;
+    .warn-card {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #92400e;
+      font-weight: 500;
     }
-    .item-top { display: flex; justify-content: space-between; align-items: center; }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+
+    /* Application & Inbox Item Cards */
+    .item-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
     .badge-Applied { background: #fef3c7; color: #92400e; }
     .badge-Recommended { background: #e0f2fe; color: #0369a1; }
     .badge-Approved { background: #dcfce7; color: #166534; }
@@ -145,33 +370,43 @@
     .badge-Returned { background: #f1f5f9; color: #475569; }
     .badge-Cancelled { background: #f1f5f9; color: #94a3b8; }
 
-    /* Modals */
-    .gate-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+    /* Modal Overlays */
+    .gate-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- PWA INSTALL BUTTON -->
+  <!-- PWA INSTALL BANNER -->
   <button id="installAppBtn" class="hidden" type="button">📲 Install Leave App</button>
 
   <!-- LOGIN SCREEN -->
   <div class="app-card" id="loginScreen">
     <div class="brand-header">
-      <img src="logo.png" alt="Logo" style="height:55px; width:auto; margin-bottom:8px;" onerror="this.style.display='none'">
+      <img src="logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
       <h1>APDCL Leave Portal</h1>
       <p>Goalpara Electrical Sub-Division</p>
     </div>
+    
     <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">EMPLOYEE ERP ID</label>
     <input type="number" id="loginErp" class="styled-input" placeholder="e.g. 40003847" pattern="\d*">
     
     <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">PASSWORD</label>
-    <input type="password" id="loginPass" class="styled-input" placeholder="Enter password (default: apdcl)">
+    <input type="password" id="loginPass" class="styled-input" placeholder="Default: apdcl">
     
     <button id="loginBtn" class="btn btn-primary" onclick="submitLogin()">Sign In</button>
     <div id="loginError" style="color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:10px; display:none;"></div>
   </div>
 
-  <!-- PASSWORD RESET GATE -->
+  <!-- MANDATORY PASSWORD RESET MODAL -->
   <div id="passChangeGate" class="gate-overlay hidden">
     <div class="app-card" style="max-width:380px;">
       <h2 style="font-size:16px; color:var(--primary); font-weight:700; margin-bottom:6px;">Update Default Password</h2>
@@ -182,10 +417,10 @@
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
+  <!-- MAIN APPLICATION SHELL -->
   <div class="app-card hidden" id="mainApp">
     
-    <!-- Header Profile Bar -->
+    <!-- Profile Top Bar -->
     <div class="brand-header" style="display:flex; justify-content:space-between; align-items:center; text-align:left; border-bottom:1px solid var(--border); padding-bottom:12px;">
       <div>
         <h1 id="headerUserName" style="font-size:16px; color:var(--text-main);">Staff Member</h1>
@@ -194,7 +429,7 @@
       <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:700; cursor:pointer;">Logout ↗</button>
     </div>
 
-    <!-- Live Entitlement Chips -->
+    <!-- Live Entitlement Metric Chips -->
     <div class="summary-grid">
       <div class="stat-chip">
         <div class="val" id="balRemaining">-</div>
@@ -214,14 +449,14 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- View Tabs -->
     <div class="tabs-container">
       <div class="tab active" data-target="view-apply">Apply Leave</div>
       <div class="tab" data-target="view-history">My Leaves</div>
       <div class="tab hidden" id="tabInboxBtn" data-target="view-inbox">Inbox (<span id="inboxBadge">0</span>)</div>
     </div>
 
-    <!-- VIEW 1: APPLY LEAVE -->
+    <!-- TAB 1: APPLY LEAVE -->
     <div id="view-apply" class="tab-view">
       <div class="cal-controls">
         <button class="nav-arrow" onclick="navMonth(-1)">‹</button>
@@ -237,10 +472,10 @@
       </div>
       <div class="cal-grid" id="calGrid"></div>
 
-      <!-- Hover / Tap Inspection Tag -->
+      <!-- Live Inspection & Hover Feedback -->
       <div id="dayInspectionBar" class="day-preview-bar">Tap a date to inspect or select leave range</div>
 
-      <!-- Selection Computation Area -->
+      <!-- Calculation Panel -->
       <div id="calcBox" class="hidden">
         <div class="range-summary-card">
           Selected Period: <strong id="rangeText"></strong><br>
@@ -250,18 +485,18 @@
 
         <div style="margin-top:14px;">
           <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">REASON</label>
-          <input type="text" id="applyReason" class="styled-input" placeholder="e.g. Urgent personal work at home">
+          <input type="text" id="applyReason" class="styled-input" placeholder="e.g. Urgent domestic work">
           <button id="submitLeaveBtn" class="btn btn-primary" onclick="submitApplication()">Submit Application</button>
         </div>
       </div>
     </div>
 
-    <!-- VIEW 2: APPLICATION HISTORY -->
+    <!-- TAB 2: APPLICATION HISTORY -->
     <div id="view-history" class="tab-view hidden">
       <div id="historyList"></div>
     </div>
 
-    <!-- VIEW 3: INBOX -->
+    <!-- TAB 3: INBOX -->
     <div id="view-inbox" class="tab-view hidden">
       <div id="inboxList"></div>
     </div>
@@ -270,7 +505,14 @@
 
   <script>
     // ==========================================
-    // CONFIGURATION & STATE
+    // 0. PWA SERVICE WORKER REGISTRATION
+    // ==========================================
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    // ==========================================
+    // 1. CONFIGURATION & STATE
     // ==========================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhTqrIAdOgIiWR9Swjbf68q9HoC0gPt6TZZHceUAQtMl9NPsXhSkl7WNpOXtw6VK7F/exec";
 
@@ -280,13 +522,13 @@
       holidays: {},
       selectedStart: null,
       selectedEnd: null,
-      viewDate: new Date(), // Defaults cleanly to CURRENT system month
+      viewDate: new Date(),
       workingDays: 0,
       warningText: ""
     };
 
     // ==========================================
-    // PWA INSTALL SCRIPT
+    // 2. PWA INSTALL BANNER LOGIC
     // ==========================================
     const installBtn = document.getElementById('installAppBtn');
     let deferredPrompt = null;
@@ -310,13 +552,13 @@
       if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         installBtn.textContent = '📲 Install App: Tap Share → Add to Home Screen';
         installBtn.classList.remove('hidden');
-        installBtn.onclick = () => alert('Tap the Share button at the bottom of Safari, then choose "Add to Home Screen".');
+        installBtn.onclick = () => alert('Tap the Share icon at the bottom of Safari and select "Add to Home Screen".');
       }
     }
     window.addEventListener('appinstalled', () => installBtn.classList.add('hidden'));
 
     // ==========================================
-    // INITIALIZATION & TABS
+    // 3. INITIALIZATION & TABS
     // ==========================================
     window.addEventListener('load', () => {
       if (state.token && state.user) {
@@ -348,7 +590,7 @@
     }
 
     // ==========================================
-    // LOGIN & AUTH
+    // 4. AUTHENTICATION & LOGIN
     // ==========================================
     async function submitLogin() {
       const erp = document.getElementById('loginErp').value.trim();
@@ -432,7 +674,7 @@
       state.holidays = {};
       res.holidays.forEach(h => state.holidays[h.date] = h);
 
-      // Render My Leaves
+      // Render My Leaves Tab
       const hist = document.getElementById('historyList');
       hist.innerHTML = res.myLeaves.length ? res.myLeaves.map(app => `
         <div class="item-card">
@@ -447,7 +689,7 @@
         </div>
       `).join('') : '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No leave applications found.</div>';
 
-      // Render Inbox
+      // Render Inbox Tab
       const inbox = document.getElementById('inboxList');
       document.getElementById('inboxBadge').innerText = res.pendingForMe.length;
       inbox.innerHTML = res.pendingForMe.length ? res.pendingForMe.map(app => `
@@ -476,7 +718,7 @@
     }
 
     // ==========================================
-    // CALENDAR LOGIC WITH HOVER & CURRENT MONTH
+    // 5. CALENDAR & APDCL WORKING DAYS ENGINE
     // ==========================================
     function navMonth(delta) {
       state.viewDate.setMonth(state.viewDate.getMonth() + delta);
@@ -514,7 +756,7 @@
       const daysCount = new Date(y, m + 1, 0).getDate();
       const todayStr = new Date().toISOString().slice(0, 10);
 
-      // Pre-month blanks
+      // Pre-month empty filler cells
       for (let i = 0; i < firstDow; i++) {
         const empty = document.createElement('div');
         empty.className = 'cal-cell empty';
@@ -534,7 +776,7 @@
         if (info.type === 'rh') cell.classList.add('rh');
         if (dStr === todayStr) cell.classList.add('today');
 
-        // Selection bounds
+        // Selection bounds & range highlighting
         if (state.selectedStart === dStr || state.selectedEnd === dStr) cell.classList.add('selected');
         if (state.selectedStart && state.selectedEnd && dStr > state.selectedStart && dStr < state.selectedEnd) {
           cell.classList.add('in-range');
@@ -608,7 +850,7 @@
         return;
       }
 
-      // Adjacency Evaluation (day prior and day post)
+      // Adjacency check
       const prevDay = new Date(state.selectedStart);
       prevDay.setDate(prevDay.getDate() - 1);
       const nextDay = new Date(endStr);
@@ -627,6 +869,9 @@
       submitBtn.disabled = false;
     }
 
+    // ==========================================
+    // 6. ACTIONS
+    // ==========================================
     async function submitApplication() {
       const reason = document.getElementById('applyReason').value.trim();
       const btn = document.getElementById('submitLeaveBtn');
