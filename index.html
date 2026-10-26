@@ -25,6 +25,7 @@
       --danger: #ef4444;
       --success: #10b981;
       --warning: #f59e0b;
+      --ai-purple: #7c3aed;
       --holiday-bg: #fee2e2;
       --holiday-txt: #991b1b;
       --weekend-bg: #f1f5f9;
@@ -55,12 +56,12 @@
     .brand-header h1 { font-size: 19px; font-weight: 700; color: var(--primary); }
     .brand-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
 
-    .styled-input, select.styled-input {
+    .styled-input, select.styled-input, textarea.styled-input {
       width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid var(--border);
       font-size: 14px; outline: none; transition: 0.2s; background: #fafafa; margin-bottom: 12px;
       color: var(--text-main);
     }
-    .styled-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
+    .styled-input:focus, textarea.styled-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
 
     .btn {
       width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 15px;
@@ -69,6 +70,7 @@
     .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25); }
     .btn-primary:active { background: var(--primary-hover); transform: scale(0.99); }
     .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+    .btn-ai { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25); }
     .btn-danger { background: var(--danger); color: white; }
     .btn-success { background: var(--success); color: white; }
     .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; width: auto; display: inline-block; }
@@ -123,6 +125,13 @@
       padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #92400e; font-weight: 500;
     }
 
+    /* Attachment & Preview */
+    .attach-container {
+      border: 1.5px dashed var(--border); border-radius: 12px; padding: 12px;
+      text-align: center; margin-bottom: 14px; background: #fafafa;
+    }
+    .preview-thumb { max-height: 120px; border-radius: 8px; margin-top: 8px; display: block; margin-left: auto; margin-right: auto; }
+
     .item-card {
       border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px;
       background: #fafafa; display: flex; flex-direction: column; gap: 6px;
@@ -141,10 +150,20 @@
       display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
     }
 
-    /* Proxy Box */
     .proxy-box {
       background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px;
       padding: 12px; margin-bottom: 14px;
+    }
+
+    /* AI Draft Box */
+    .ai-modal-box {
+      background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto;
+    }
+    .letter-preview {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; font-family: monospace;
+      margin: 12px 0; color: #1e293b;
     }
   </style>
 </head>
@@ -178,6 +197,19 @@
       <input type="password" id="newPass" class="styled-input" placeholder="New Password (min 5 chars)">
       <button class="btn btn-primary" onclick="submitPasswordChange()">Update & Enter</button>
       <div id="changePassMsg" style="color:var(--danger); font-size:12px; margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- AI LETTER PREVIEW MODAL -->
+  <div id="aiLetterModal" class="gate-overlay hidden">
+    <div class="ai-modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:15px; color:var(--ai-purple); font-weight:700;">✨ Generated Formal Application</h3>
+        <button onclick="closeAiModal()" style="border:none; background:none; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <div class="letter-preview" id="aiGeneratedText"></div>
+      <button class="btn btn-ai" onclick="useAiLetterText()">Use this Letter in Reason</button>
+      <button class="btn btn-sm" style="background:#f1f5f9; color:#475569; width:100%; margin-top:6px;" onclick="copyAiLetter()">Copy to Clipboard</button>
     </div>
   </div>
 
@@ -221,7 +253,7 @@
     <!-- VIEW 1: APPLY LEAVE -->
     <div id="view-apply" class="tab-view">
 
-      <!-- PROXY APPLICATION CONTROLS (For Admin / JMs / SMR / SDE) -->
+      <!-- PROXY APPLICATION CONTROLS -->
       <div id="proxyContainer" class="proxy-box hidden">
         <label style="font-size:12px; font-weight:700; color:#166534; display:block; margin-bottom:6px;">APPLYING ON BEHALF OF:</label>
         <select id="staffSelect" class="styled-input" style="margin-bottom:8px;" onchange="onTargetStaffChanged()">
@@ -263,11 +295,27 @@
         </div>
         <div id="adjacencyAlert" class="warn-card hidden"></div>
 
+        <!-- AI APPLICATION GENERATOR PROMPT BUTTON -->
         <div style="margin-top:14px;">
-          <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">REASON FOR LEAVE</label>
-          <input type="text" id="applyReason" class="styled-input" placeholder="e.g. Urgent domestic work / Sick">
-          <button id="submitLeaveBtn" class="btn btn-primary" onclick="submitApplication()">Submit Application</button>
+          <button type="button" class="btn btn-ai" onclick="generateAiApplication()">✨ AI Draft Formal Application Letter</button>
         </div>
+
+        <div style="margin-top:4px;">
+          <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">REASON / APPLICATION TEXT</label>
+          <textarea id="applyReason" class="styled-input" rows="3" placeholder="e.g. Urgent domestic work / Sick leave"></textarea>
+        </div>
+
+        <!-- DOCUMENT / PHOTO ATTACHMENT -->
+        <div class="attach-container">
+          <label style="font-size:12px; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">📎 ATTACH APPLICATION / MEDICAL SLIP (OPTIONAL)</label>
+          <input type="file" id="attachFile" accept="image/*" capture="environment" style="font-size:12px;" onchange="handleFileSelected(event)">
+          <div id="previewArea" class="hidden">
+            <img id="imgPreview" class="preview-thumb">
+            <button type="button" class="btn btn-sm btn-danger" style="margin-top:6px;" onclick="removeAttachment()">Remove Photo</button>
+          </div>
+        </div>
+
+        <button id="submitLeaveBtn" class="btn btn-primary" onclick="submitApplication()">Submit Application</button>
       </div>
     </div>
 
@@ -299,7 +347,8 @@
       selectedEnd: null,
       viewDate: new Date(),
       workingDays: 0,
-      warningText: ""
+      warningText: "",
+      attachmentBase64: null
     };
 
     // Install Banner
@@ -349,7 +398,6 @@
     async function api(action, payload = {}) {
       payload.action = action;
       payload.token = state.token;
-      // Add timestamp to prevent browser caching
       payload._t = Date.now();
       const res = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -442,7 +490,6 @@
       state.holidays = {};
       res.holidays.forEach(h => state.holidays[h.date] = h);
 
-      // Populate Staff Directory Dropdown for Proxy Mode
       if (res.staffList && res.staffList.length) {
         state.staffList = res.staffList;
         const sel = document.getElementById('staffSelect');
@@ -460,6 +507,7 @@
           </div>
           <div style="font-size:13px; font-weight:600;">📅 ${app.from} to ${app.to} (${app.days} days)</div>
           <div style="font-size:12px; color:var(--text-muted);">${app.reason}</div>
+          ${app.attachmentUrl ? `<a href="${app.attachmentUrl}" target="_blank" style="font-size:12px; font-weight:700; color:var(--primary); text-decoration:none;">📎 View Attached Document ↗</a>` : ''}
           ${(app.status === 'Applied' || app.status === 'Recommended') ? 
             `<button class="btn btn-danger btn-sm" style="margin-top:6px;" onclick="cancelApp('${app.appId}')">Cancel Leave</button>` : ''}
         </div>
@@ -479,6 +527,7 @@
           </div>
           <div style="font-size:13px; font-weight:600; margin-top:4px;">📅 ${app.from} to ${app.to} (${app.days} days)</div>
           <div style="font-size:12px; color:var(--text-muted);">${app.reason}</div>
+          ${app.attachmentUrl ? `<a href="${app.attachmentUrl}" target="_blank" style="font-size:12px; font-weight:700; color:var(--primary); text-decoration:none;">📎 View Attached Document ↗</a>` : ''}
           ${app.warning ? `<div style="font-size:11px; color:var(--danger); font-weight:600;">⚠️ ${app.warning}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
             ${state.user.role === 'SDE' ? `
@@ -500,7 +549,6 @@
       } else {
         const staff = state.staffList.find(s => s.erp === selectedErp);
         if (staff) {
-          // Pre-select default supervisor in the forward-to dropdown
           const approverSel = document.getElementById('approverSelect');
           if (staff.forwardsTo && staff.forwardsTo !== 'NONE') {
             approverSel.value = staff.forwardsTo;
@@ -511,6 +559,131 @@
       }
     }
 
+    // ==========================================
+    // CLIENT PHOTO COMPRESSION & ATTACHMENT
+    // ==========================================
+    function handleFileSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 1200; // Resize to max 1200px width/height
+
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress to JPEG 70% quality (~80-150KB)
+          state.attachmentBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          document.getElementById('imgPreview').src = state.attachmentBase64;
+          document.getElementById('previewArea').classList.remove('hidden');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeAttachment() {
+      state.attachmentBase64 = null;
+      document.getElementById('attachFile').value = '';
+      document.getElementById('previewArea').classList.add('hidden');
+    }
+
+    // ==========================================
+    // AI APPLICATION LETTER DRAFT GENERATOR
+    // ==========================================
+    let generatedAiText = "";
+
+    function generateAiApplication() {
+      const start = state.selectedStart;
+      const end = state.selectedEnd || state.selectedStart;
+      const days = state.workingDays;
+
+      if (!start) return alert("Please select leave dates on the calendar first.");
+
+      // Check applicant details (Self or Proxy)
+      const targetErp = document.getElementById('staffSelect') ? document.getElementById('staffSelect').value : 'SELF';
+      let applicantName = state.user.name;
+      let applicantDesig = state.user.desig;
+      let applicantErp = state.user.erp;
+
+      if (targetErp !== 'SELF') {
+        const target = state.staffList.find(s => s.erp === targetErp);
+        if (target) {
+          applicantName = target.name;
+          applicantDesig = target.desig;
+          applicantErp = target.erp;
+        }
+      }
+
+      const inputReason = document.getElementById('applyReason').value.trim() || "urgent domestic work";
+      const todayStr = Utilities_formatToday();
+
+      generatedAiText = 
+`To,
+The Sub-Divisional Engineer (Electrical),
+Goalpara Electrical Sub-Division, APDCL,
+Goalpara, Assam.
+
+[Through Proper Channel]
+
+Subject: Application for Casual Leave (CL) for ${days} Day(s).
+
+Sir,
+With due respect, I have the honour to state that I am unable to attend my official duties from ${start} to ${end} (${days} working day(s)) on account of ${inputReason}.
+
+I therefore earnestly request you kindly to grant me Casual Leave for the aforementioned period.
+
+Yours faithfully,
+
+Name: ${applicantName}
+Designation: ${applicantDesig}
+ERP ID: ${applicantErp}
+Goalpara Electrical Sub-Division, APDCL
+Date: ${todayStr}`;
+
+      document.getElementById('aiGeneratedText').innerText = generatedAiText;
+      document.getElementById('aiLetterModal').classList.remove('hidden');
+    }
+
+    function closeAiModal() {
+      document.getElementById('aiLetterModal').classList.add('hidden');
+    }
+
+    function useAiLetterText() {
+      document.getElementById('applyReason').value = generatedAiText;
+      closeAiModal();
+    }
+
+    function copyAiLetter() {
+      navigator.clipboard.writeText(generatedAiText).then(() => {
+        alert("Formal application copied to clipboard!");
+      });
+    }
+
+    function Utilities_formatToday() {
+      const d = new Date();
+      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    }
+
+    // ==========================================
+    // CALENDAR ENGINE
+    // ==========================================
     function navMonth(delta) {
       state.viewDate.setMonth(state.viewDate.getMonth() + delta);
       renderCalendar();
@@ -656,6 +829,9 @@
       submitBtn.disabled = false;
     }
 
+    // ==========================================
+    // SUBMISSION & DECISIONS
+    // ==========================================
     async function submitApplication() {
       const reason = document.getElementById('applyReason').value.trim();
       const btn = document.getElementById('submitLeaveBtn');
@@ -665,7 +841,7 @@
       const approverChoice = document.getElementById('approverSelect') ? document.getElementById('approverSelect').value : 'DEFAULT';
 
       btn.disabled = true;
-      btn.innerText = "Submitting...";
+      btn.innerText = "Submitting with attachment...";
 
       const payload = {
         targetErp: targetErp === 'SELF' ? state.user.erp : targetErp,
@@ -674,7 +850,8 @@
         to: state.selectedEnd || state.selectedStart,
         daysCounted: state.workingDays,
         reason: reason,
-        warning: state.warningText
+        warning: state.warningText,
+        attachmentData: state.attachmentBase64 // Sends compressed base64
       };
 
       const res = await api('applyCL', payload);
@@ -682,6 +859,7 @@
         alert("Leave application submitted successfully!");
         state.selectedStart = null;
         state.selectedEnd = null;
+        removeAttachment();
         document.getElementById('applyReason').value = '';
         document.getElementById('calcBox').classList.add('hidden');
         await refreshData();
@@ -697,7 +875,7 @@
       const remarks = prompt(`Enter remarks for ${action}:`) || "";
       const res = await api('takeAction', { appId, action, remarks });
       if (res.success) {
-        await refreshData(); // Immediate live DOM update
+        await refreshData();
       } else {
         alert(res.error);
       }
@@ -707,7 +885,7 @@
       if (!confirm("Are you sure you want to cancel this leave application?")) return;
       const res = await api('cancelApplication', { appId });
       if (res.success) {
-        await refreshData(); // Immediate live DOM update
+        await refreshData();
       } else {
         alert(res.error);
       }
