@@ -6,13 +6,11 @@
   <meta name="theme-color" content="#0f4c81">
   <title>APDCL Leave Portal - GESD</title>
 
-  <!-- PWA & Mobile Web App Meta -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="APDCL Leave">
 
   <style>
@@ -35,254 +33,70 @@
       --rh-txt: #92400e;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding: 12px; display: flex; flex-direction: column; align-items: center; }
 
     .hidden { display: none !important; }
 
-    /* PWA Install Banner */
     #installAppBtn {
-      width: 100%;
-      max-width: 520px;
-      padding: 14px;
-      background-color: #10b981;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      width: 100%; max-width: 520px; padding: 14px; background-color: #10b981;
+      color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+      cursor: pointer; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
 
     .app-card {
-      background: var(--card-bg);
-      width: 100%;
-      max-width: 520px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-      padding: 24px 18px;
-      border: 1px solid #f1f5f9;
-      margin-bottom: 16px;
+      background: var(--card-bg); width: 100%; max-width: 520px;
+      border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      padding: 24px 18px; border: 1px solid #f1f5f9; margin-bottom: 16px;
     }
 
-    .brand-header {
-      text-align: center;
-      margin-bottom: 18px;
-    }
+    .brand-header { text-align: center; margin-bottom: 18px; }
+    .brand-header h1 { font-size: 19px; font-weight: 700; color: var(--primary); }
+    .brand-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
 
-    .brand-logo {
-      height: 56px;
-      width: 56px;
-      border-radius: 12px;
-      object-fit: contain;
-      margin-bottom: 8px;
+    .styled-input, select.styled-input {
+      width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid var(--border);
+      font-size: 14px; outline: none; transition: 0.2s; background: #fafafa; margin-bottom: 12px;
+      color: var(--text-main);
     }
-
-    .brand-header h1 {
-      font-size: 19px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .brand-header p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 2px;
-      font-weight: 500;
-    }
-
-    /* Form Fields */
-    .styled-input {
-      width: 100%;
-      padding: 13px 14px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border);
-      font-size: 15px;
-      outline: none;
-      transition: 0.2s;
-      background: #fafafa;
-      margin-bottom: 12px;
-    }
-
-    .styled-input:focus {
-      border-color: var(--primary);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
-    }
+    .styled-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
 
     .btn {
-      width: 100%;
-      padding: 13px;
-      border-radius: 12px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      text-align: center;
+      width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 15px;
+      font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center;
     }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
-    }
-
-    .btn-primary:active {
-      background: var(--primary-hover);
-      transform: scale(0.99);
-    }
-
-    .btn-primary:disabled {
-      background: #cbd5e1;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25); }
+    .btn-primary:active { background: var(--primary-hover); transform: scale(0.99); }
+    .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-success { background: var(--success); color: white; }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 8px;
-      width: auto;
-      display: inline-block;
-    }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; width: auto; display: inline-block; }
 
-    /* Metric Summary Chips */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin-bottom: 16px;
-    }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
+    .stat-chip { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 4px; text-align: center; }
+    .stat-chip .val { font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1.1; }
+    .stat-chip .lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
 
-    .stat-chip {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 4px;
-      text-align: center;
-    }
-
-    .stat-chip .val {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--primary);
-      line-height: 1.1;
-    }
-
-    .stat-chip .lbl {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
-    /* Tab Switcher */
-    .tabs-container {
-      display: flex;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 16px;
-      gap: 4px;
-    }
-
+    .tabs-container { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; gap: 4px; }
     .tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px 4px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #94a3b8;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: 0.2s;
+      flex: 1; text-align: center; padding: 10px 4px; font-size: 13px; font-weight: 700;
+      color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;
     }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-    .tab.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-    }
+    .cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .cal-title { font-size: 16px; font-weight: 700; color: var(--primary); }
+    .nav-arrow { background: #f1f5f9; border: none; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 15px; font-weight: bold; color: var(--primary); }
 
-    /* Calendar Grid */
-    .cal-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .cal-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .nav-arrow {
-      background: #f1f5f9;
-      border: none;
-      border-radius: 8px;
-      width: 34px;
-      height: 34px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      color: var(--primary);
-    }
-
-    .cal-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      text-align: center;
-    }
-
-    .cal-head {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      padding-bottom: 6px;
-      text-transform: uppercase;
-    }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+    .cal-head { font-size: 11px; font-weight: 700; color: var(--text-muted); padding-bottom: 6px; text-transform: uppercase; }
 
     .cal-cell {
-      position: relative;
-      aspect-ratio: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      user-select: none;
+      position: relative; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; border-radius: 10px; border: 1px solid var(--border);
+      background: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; user-select: none;
     }
-
     .cal-cell.empty { border: none; background: transparent; cursor: default; }
     .cal-cell.holiday { background: var(--holiday-bg); color: var(--holiday-txt); border-color: #fecaca; }
     .cal-cell.weekend { background: var(--weekend-bg); color: var(--weekend-txt); }
@@ -291,78 +105,30 @@
     .cal-cell.in-range { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
 
     .cal-cell.today::after {
-      content: '';
-      position: absolute;
-      bottom: 3px;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--primary);
+      content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--primary);
     }
     .cal-cell.selected.today::after { background: #ffffff; }
 
-    /* Day Inspection Bar */
     .day-preview-bar {
-      margin-top: 12px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      text-align: center;
-      background: #f8fafc;
-      border: 1px dashed var(--border);
-      color: var(--text-muted);
+      margin-top: 12px; padding: 10px 14px; border-radius: 10px; font-size: 12px;
+      font-weight: 600; text-align: center; background: #f8fafc; border: 1px dashed var(--border); color: var(--text-muted);
     }
 
-    /* Calculation & Warning Cards */
     .range-summary-card {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-top: 14px;
-      font-size: 13px;
-      color: #1e40af;
-      line-height: 1.5;
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px;
+      padding: 12px 14px; margin-top: 14px; font-size: 13px; color: #1e40af; line-height: 1.5;
     }
-
     .warn-card {
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-top: 10px;
-      font-size: 12px;
-      color: #92400e;
-      font-weight: 500;
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
+      padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #92400e; font-weight: 500;
     }
 
-    /* Application & Inbox Item Cards */
     .item-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
-      background: #fafafa;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px;
+      background: #fafafa; display: flex; flex-direction: column; gap: 6px;
     }
-
-    .item-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
+    .item-top { display: flex; justify-content: space-between; align-items: center; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .badge-Applied { background: #fef3c7; color: #92400e; }
     .badge-Recommended { background: #e0f2fe; color: #0369a1; }
     .badge-Approved { background: #dcfce7; color: #166534; }
@@ -370,28 +136,26 @@
     .badge-Returned { background: #f1f5f9; color: #475569; }
     .badge-Cancelled { background: #f1f5f9; color: #94a3b8; }
 
-    /* Modal Overlays */
     .gate-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 16px;
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+    }
+
+    /* Proxy Box */
+    .proxy-box {
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px;
+      padding: 12px; margin-bottom: 14px;
     }
   </style>
 </head>
 <body>
 
-  <!-- PWA INSTALL BANNER -->
   <button id="installAppBtn" class="hidden" type="button">📲 Install Leave App</button>
 
   <!-- LOGIN SCREEN -->
   <div class="app-card" id="loginScreen">
     <div class="brand-header">
-      <img src="logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <img src="logo.png" alt="Logo" style="height:56px; border-radius:12px; margin-bottom:8px;" onerror="this.style.display='none'">
       <h1>APDCL Leave Portal</h1>
       <p>Goalpara Electrical Sub-Division</p>
     </div>
@@ -406,7 +170,7 @@
     <div id="loginError" style="color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:10px; display:none;"></div>
   </div>
 
-  <!-- MANDATORY PASSWORD RESET MODAL -->
+  <!-- PASSWORD RESET GATE -->
   <div id="passChangeGate" class="gate-overlay hidden">
     <div class="app-card" style="max-width:380px;">
       <h2 style="font-size:16px; color:var(--primary); font-weight:700; margin-bottom:6px;">Update Default Password</h2>
@@ -417,10 +181,9 @@
     </div>
   </div>
 
-  <!-- MAIN APPLICATION SHELL -->
+  <!-- MAIN APP CONTAINER -->
   <div class="app-card hidden" id="mainApp">
     
-    <!-- Profile Top Bar -->
     <div class="brand-header" style="display:flex; justify-content:space-between; align-items:center; text-align:left; border-bottom:1px solid var(--border); padding-bottom:12px;">
       <div>
         <h1 id="headerUserName" style="font-size:16px; color:var(--text-main);">Staff Member</h1>
@@ -429,7 +192,7 @@
       <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:700; cursor:pointer;">Logout ↗</button>
     </div>
 
-    <!-- Live Entitlement Metric Chips -->
+    <!-- Live Entitlement Chips -->
     <div class="summary-grid">
       <div class="stat-chip">
         <div class="val" id="balRemaining">-</div>
@@ -449,15 +212,34 @@
       </div>
     </div>
 
-    <!-- View Tabs -->
     <div class="tabs-container">
       <div class="tab active" data-target="view-apply">Apply Leave</div>
       <div class="tab" data-target="view-history">My Leaves</div>
       <div class="tab hidden" id="tabInboxBtn" data-target="view-inbox">Inbox (<span id="inboxBadge">0</span>)</div>
     </div>
 
-    <!-- TAB 1: APPLY LEAVE -->
+    <!-- VIEW 1: APPLY LEAVE -->
     <div id="view-apply" class="tab-view">
+
+      <!-- PROXY APPLICATION CONTROLS (For Admin / JMs / SMR / SDE) -->
+      <div id="proxyContainer" class="proxy-box hidden">
+        <label style="font-size:12px; font-weight:700; color:#166534; display:block; margin-bottom:6px;">APPLYING ON BEHALF OF:</label>
+        <select id="staffSelect" class="styled-input" style="margin-bottom:8px;" onchange="onTargetStaffChanged()">
+          <option value="SELF">Myself (My Own Leave)</option>
+        </select>
+
+        <label style="font-size:12px; font-weight:700; color:#166534; display:block; margin-bottom:6px;">FORWARD APPLICATION TO:</label>
+        <select id="approverSelect" class="styled-input" style="margin-bottom:0;">
+          <option value="DEFAULT">Default Hierarchy</option>
+          <option value="40004535">Joy Gopal Goswami (SDE - Direct)</option>
+          <option value="40011937">Shahjubin Rahman (SMR)</option>
+          <option value="40007937">Abdur Rezzak (JM)</option>
+          <option value="40013113">Asraful Hussain (JM)</option>
+          <option value="40011246">Bitu Saha (JM)</option>
+          <option value="40013360">Pran Krishna Nath (JM)</option>
+        </select>
+      </div>
+
       <div class="cal-controls">
         <button class="nav-arrow" onclick="navMonth(-1)">‹</button>
         <div class="cal-title" id="calMonthTitle">Current Month</div>
@@ -472,10 +254,8 @@
       </div>
       <div class="cal-grid" id="calGrid"></div>
 
-      <!-- Live Inspection & Hover Feedback -->
       <div id="dayInspectionBar" class="day-preview-bar">Tap a date to inspect or select leave range</div>
 
-      <!-- Calculation Panel -->
       <div id="calcBox" class="hidden">
         <div class="range-summary-card">
           Selected Period: <strong id="rangeText"></strong><br>
@@ -484,19 +264,19 @@
         <div id="adjacencyAlert" class="warn-card hidden"></div>
 
         <div style="margin-top:14px;">
-          <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">REASON</label>
-          <input type="text" id="applyReason" class="styled-input" placeholder="e.g. Urgent domestic work">
+          <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">REASON FOR LEAVE</label>
+          <input type="text" id="applyReason" class="styled-input" placeholder="e.g. Urgent domestic work / Sick">
           <button id="submitLeaveBtn" class="btn btn-primary" onclick="submitApplication()">Submit Application</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: APPLICATION HISTORY -->
+    <!-- VIEW 2: HISTORY -->
     <div id="view-history" class="tab-view hidden">
       <div id="historyList"></div>
     </div>
 
-    <!-- TAB 3: INBOX -->
+    <!-- VIEW 3: INBOX -->
     <div id="view-inbox" class="tab-view hidden">
       <div id="inboxList"></div>
     </div>
@@ -504,22 +284,17 @@
   </div>
 
   <script>
-    // ==========================================
-    // 0. PWA SERVICE WORKER REGISTRATION
-    // ==========================================
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
 
-    // ==========================================
-    // 1. CONFIGURATION & STATE
-    // ==========================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhTqrIAdOgIiWR9Swjbf68q9HoC0gPt6TZZHceUAQtMl9NPsXhSkl7WNpOXtw6VK7F/exec";
 
     let state = {
       token: localStorage.getItem('apdcl_leave_token') || null,
       user: JSON.parse(localStorage.getItem('apdcl_leave_user') || 'null'),
       holidays: {},
+      staffList: [],
       selectedStart: null,
       selectedEnd: null,
       viewDate: new Date(),
@@ -527,9 +302,7 @@
       warningText: ""
     };
 
-    // ==========================================
-    // 2. PWA INSTALL BANNER LOGIC
-    // ==========================================
+    // Install Banner
     const installBtn = document.getElementById('installAppBtn');
     let deferredPrompt = null;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -552,18 +325,13 @@
       if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         installBtn.textContent = '📲 Install App: Tap Share → Add to Home Screen';
         installBtn.classList.remove('hidden');
-        installBtn.onclick = () => alert('Tap the Share icon at the bottom of Safari and select "Add to Home Screen".');
+        installBtn.onclick = () => alert('Tap Share icon at bottom of Safari and select "Add to Home Screen".');
       }
     }
     window.addEventListener('appinstalled', () => installBtn.classList.add('hidden'));
 
-    // ==========================================
-    // 3. INITIALIZATION & TABS
-    // ==========================================
     window.addEventListener('load', () => {
-      if (state.token && state.user) {
-        bootApp();
-      }
+      if (state.token && state.user) bootApp();
       setupTabs();
     });
 
@@ -581,6 +349,8 @@
     async function api(action, payload = {}) {
       payload.action = action;
       payload.token = state.token;
+      // Add timestamp to prevent browser caching
+      payload._t = Date.now();
       const res = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -589,9 +359,6 @@
       return await res.json();
     }
 
-    // ==========================================
-    // 4. AUTHENTICATION & LOGIN
-    // ==========================================
     async function submitLogin() {
       const erp = document.getElementById('loginErp').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
@@ -656,6 +423,7 @@
 
       if (['JM', 'SMR', 'SDE', 'ADMIN'].includes(state.user.role)) {
         document.getElementById('tabInboxBtn').classList.remove('hidden');
+        document.getElementById('proxyContainer').classList.remove('hidden');
       }
 
       await refreshData();
@@ -673,6 +441,14 @@
 
       state.holidays = {};
       res.holidays.forEach(h => state.holidays[h.date] = h);
+
+      // Populate Staff Directory Dropdown for Proxy Mode
+      if (res.staffList && res.staffList.length) {
+        state.staffList = res.staffList;
+        const sel = document.getElementById('staffSelect');
+        sel.innerHTML = '<option value="SELF">Myself (My Own Leave)</option>' +
+          res.staffList.map(s => `<option value="${s.erp}">${s.name} (${s.desig} - ${s.erp})</option>`).join('');
+      }
 
       // Render My Leaves Tab
       const hist = document.getElementById('historyList');
@@ -717,9 +493,24 @@
       `).join('') : '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No pending actions for you.</div>';
     }
 
-    // ==========================================
-    // 5. CALENDAR & APDCL WORKING DAYS ENGINE
-    // ==========================================
+    function onTargetStaffChanged() {
+      const selectedErp = document.getElementById('staffSelect').value;
+      if (selectedErp === 'SELF') {
+        refreshData();
+      } else {
+        const staff = state.staffList.find(s => s.erp === selectedErp);
+        if (staff) {
+          // Pre-select default supervisor in the forward-to dropdown
+          const approverSel = document.getElementById('approverSelect');
+          if (staff.forwardsTo && staff.forwardsTo !== 'NONE') {
+            approverSel.value = staff.forwardsTo;
+          } else {
+            approverSel.value = 'DEFAULT';
+          }
+        }
+      }
+    }
+
     function navMonth(delta) {
       state.viewDate.setMonth(state.viewDate.getMonth() + delta);
       renderCalendar();
@@ -756,7 +547,6 @@
       const daysCount = new Date(y, m + 1, 0).getDate();
       const todayStr = new Date().toISOString().slice(0, 10);
 
-      // Pre-month empty filler cells
       for (let i = 0; i < firstDow; i++) {
         const empty = document.createElement('div');
         empty.className = 'cal-cell empty';
@@ -776,13 +566,11 @@
         if (info.type === 'rh') cell.classList.add('rh');
         if (dStr === todayStr) cell.classList.add('today');
 
-        // Selection bounds & range highlighting
         if (state.selectedStart === dStr || state.selectedEnd === dStr) cell.classList.add('selected');
         if (state.selectedStart && state.selectedEnd && dStr > state.selectedStart && dStr < state.selectedEnd) {
           cell.classList.add('in-range');
         }
 
-        // Tooltip hover + tap feedback
         cell.title = `${dStr}: ${info.label}`;
         cell.onmouseenter = () => updateInspection(dStr, info.label);
         cell.onclick = () => onCellSelect(dStr, info.label);
@@ -850,7 +638,6 @@
         return;
       }
 
-      // Adjacency check
       const prevDay = new Date(state.selectedStart);
       prevDay.setDate(prevDay.getDate() - 1);
       const nextDay = new Date(endStr);
@@ -862,25 +649,27 @@
       state.warningText = "";
       if (pInfo.type !== 'work' || nInfo.type !== 'work') {
         state.warningText = "CL is adjacent to Sunday/Holiday/2nd or 4th Saturday.";
-        alert.innerText = `Note: ${state.warningText} (SDE will review this note).`;
+        alert.innerText = `Note: ${state.warningText} (Approver will review this note).`;
         alert.classList.remove('hidden');
       }
 
       submitBtn.disabled = false;
     }
 
-    // ==========================================
-    // 6. ACTIONS
-    // ==========================================
     async function submitApplication() {
       const reason = document.getElementById('applyReason').value.trim();
       const btn = document.getElementById('submitLeaveBtn');
       if (!reason) return alert("Please specify the reason for absence.");
 
+      const targetErp = document.getElementById('staffSelect') ? document.getElementById('staffSelect').value : 'SELF';
+      const approverChoice = document.getElementById('approverSelect') ? document.getElementById('approverSelect').value : 'DEFAULT';
+
       btn.disabled = true;
       btn.innerText = "Submitting...";
 
       const payload = {
+        targetErp: targetErp === 'SELF' ? state.user.erp : targetErp,
+        forwardToErp: approverChoice === 'DEFAULT' ? null : approverChoice,
         from: state.selectedStart,
         to: state.selectedEnd || state.selectedStart,
         daysCounted: state.workingDays,
@@ -907,15 +696,21 @@
     async function handleDecision(appId, action) {
       const remarks = prompt(`Enter remarks for ${action}:`) || "";
       const res = await api('takeAction', { appId, action, remarks });
-      if (res.success) refreshData();
-      else alert(res.error);
+      if (res.success) {
+        await refreshData(); // Immediate live DOM update
+      } else {
+        alert(res.error);
+      }
     }
 
     async function cancelApp(appId) {
       if (!confirm("Are you sure you want to cancel this leave application?")) return;
       const res = await api('cancelApplication', { appId });
-      if (res.success) refreshData();
-      else alert(res.error);
+      if (res.success) {
+        await refreshData(); // Immediate live DOM update
+      } else {
+        alert(res.error);
+      }
     }
   </script>
 </body>
