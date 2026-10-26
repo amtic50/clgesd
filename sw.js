@@ -1,4 +1,5 @@
-// Minimal service worker to fulfill PWA install criteria
+const CACHE_NAME = 'apdcl-leave-v1';
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -8,6 +9,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Let network handle all Apps Script API calls directly
+  // Let network handle Apps Script API calls directly
   event.respondWith(fetch(event.request));
 });
