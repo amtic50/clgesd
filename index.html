@@ -11,6 +11,7 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="APDCL Leave">
 
   <style>
@@ -53,6 +54,7 @@
     }
 
     .brand-header { text-align: center; margin-bottom: 18px; }
+    .brand-logo { height: 56px; width: 56px; border-radius: 12px; object-fit: contain; margin-bottom: 8px; }
     .brand-header h1 { font-size: 19px; font-weight: 700; color: var(--primary); }
     .brand-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
 
@@ -125,7 +127,6 @@
       padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #92400e; font-weight: 500;
     }
 
-    /* Attachment & Preview */
     .attach-container {
       border: 1.5px dashed var(--border); border-radius: 12px; padding: 12px;
       text-align: center; margin-bottom: 14px; background: #fafafa;
@@ -155,7 +156,6 @@
       padding: 12px; margin-bottom: 14px;
     }
 
-    /* AI Draft Box */
     .ai-modal-box {
       background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 20px;
       box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto;
@@ -174,7 +174,7 @@
   <!-- LOGIN SCREEN -->
   <div class="app-card" id="loginScreen">
     <div class="brand-header">
-      <img src="logo.png" alt="Logo" style="height:56px; border-radius:12px; margin-bottom:8px;" onerror="this.style.display='none'">
+      <img src="logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
       <h1>APDCL Leave Portal</h1>
       <p>Goalpara Electrical Sub-Division</p>
     </div>
@@ -295,7 +295,7 @@
         </div>
         <div id="adjacencyAlert" class="warn-card hidden"></div>
 
-        <!-- AI APPLICATION GENERATOR PROMPT BUTTON -->
+        <!-- AI APPLICATION DRAFT GENERATOR -->
         <div style="margin-top:14px;">
           <button type="button" class="btn btn-ai" onclick="generateAiApplication()">✨ AI Draft Formal Application Letter</button>
         </div>
@@ -305,13 +305,21 @@
           <textarea id="applyReason" class="styled-input" rows="3" placeholder="e.g. Urgent domestic work / Sick leave"></textarea>
         </div>
 
-        <!-- DOCUMENT / PHOTO ATTACHMENT -->
+        <!-- DOCUMENT / PDF / PHOTO ATTACHMENT -->
         <div class="attach-container">
-          <label style="font-size:12px; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">📎 ATTACH APPLICATION / MEDICAL SLIP (OPTIONAL)</label>
-          <input type="file" id="attachFile" accept="image/*" capture="environment" style="font-size:12px;" onchange="handleFileSelected(event)">
-          <div id="previewArea" class="hidden">
-            <img id="imgPreview" class="preview-thumb">
-            <button type="button" class="btn btn-sm btn-danger" style="margin-top:6px;" onclick="removeAttachment()">Remove Photo</button>
+          <label style="font-size:12px; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">
+            📎 ATTACH PDF / APPLICATION PHOTO / MEDICAL SLIP (OPTIONAL)
+          </label>
+          <input type="file" id="attachFile" accept="application/pdf,image/*" style="font-size:12px;" onchange="handleFileSelected(event)">
+          
+          <div id="previewArea" class="hidden" style="margin-top:8px;">
+            <img id="imgPreview" class="preview-thumb hidden">
+            <div id="pdfPreviewBadge" class="hidden" style="background:#e0f2fe; color:#0369a1; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:600; display:inline-block;">
+              📄 <span id="pdfFileName">document.pdf</span>
+            </div>
+            <div style="margin-top:6px;">
+              <button type="button" class="btn btn-sm btn-danger" onclick="removeAttachment()">Remove Attachment</button>
+            </div>
           </div>
         </div>
 
@@ -348,10 +356,11 @@
       viewDate: new Date(),
       workingDays: 0,
       warningText: "",
-      attachmentBase64: null
+      attachmentBase64: null,
+      attachmentMime: null
     };
 
-    // Install Banner
+    // Install Banner Logic
     const installBtn = document.getElementById('installAppBtn');
     let deferredPrompt = null;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -507,7 +516,15 @@
           </div>
           <div style="font-size:13px; font-weight:600;">📅 ${app.from} to ${app.to} (${app.days} days)</div>
           <div style="font-size:12px; color:var(--text-muted);">${app.reason}</div>
-          ${app.attachmentUrl ? `<a href="${app.attachmentUrl}" target="_blank" style="font-size:12px; font-weight:700; color:var(--primary); text-decoration:none;">📎 View Attached Document ↗</a>` : ''}
+          
+          ${app.attachmentUrl ? `
+            <div style="margin: 6px 0;">
+              <a href="${app.attachmentUrl}" target="_blank" style="display:inline-block; background:#e0f2fe; color:#0369a1; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;">
+                📄 View Attached PDF / Doc ↗
+              </a>
+            </div>
+          ` : ''}
+
           ${(app.status === 'Applied' || app.status === 'Recommended') ? 
             `<button class="btn btn-danger btn-sm" style="margin-top:6px;" onclick="cancelApp('${app.appId}')">Cancel Leave</button>` : ''}
         </div>
@@ -527,7 +544,15 @@
           </div>
           <div style="font-size:13px; font-weight:600; margin-top:4px;">📅 ${app.from} to ${app.to} (${app.days} days)</div>
           <div style="font-size:12px; color:var(--text-muted);">${app.reason}</div>
-          ${app.attachmentUrl ? `<a href="${app.attachmentUrl}" target="_blank" style="font-size:12px; font-weight:700; color:var(--primary); text-decoration:none;">📎 View Attached Document ↗</a>` : ''}
+          
+          ${app.attachmentUrl ? `
+            <div style="margin: 6px 0;">
+              <a href="${app.attachmentUrl}" target="_blank" style="display:inline-block; background:#e0f2fe; color:#0369a1; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;">
+                📄 View Attached PDF / Document ↗
+              </a>
+            </div>
+          ` : ''}
+
           ${app.warning ? `<div style="font-size:11px; color:var(--danger); font-weight:600;">⚠️ ${app.warning}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
             ${state.user.role === 'SDE' ? `
@@ -560,12 +585,34 @@
     }
 
     // ==========================================
-    // CLIENT PHOTO COMPRESSION & ATTACHMENT
+    // PDF & IMAGE ATTACHMENT HANDLER
     // ==========================================
     function handleFileSelected(event) {
       const file = event.target.files[0];
       if (!file) return;
 
+      state.attachmentMime = file.type;
+
+      // Handle PDF
+      if (file.type === 'application/pdf') {
+        if (file.size > 5 * 1024 * 1024) {
+          alert("PDF file size must be under 5MB.");
+          event.target.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.attachmentBase64 = e.target.result;
+          document.getElementById('pdfFileName').innerText = `${file.name} (${Math.round(file.size/1024)} KB)`;
+          document.getElementById('pdfPreviewBadge').classList.remove('hidden');
+          document.getElementById('imgPreview').classList.add('hidden');
+          document.getElementById('previewArea').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      // Handle Image (with compression)
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
@@ -573,7 +620,7 @@
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 1200; // Resize to max 1200px width/height
+          const maxDim = 1200;
 
           if (width > height && width > maxDim) {
             height = Math.round((height * maxDim) / width);
@@ -588,9 +635,11 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Compress to JPEG 70% quality (~80-150KB)
           state.attachmentBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          state.attachmentMime = 'image/jpeg';
           document.getElementById('imgPreview').src = state.attachmentBase64;
+          document.getElementById('imgPreview').classList.remove('hidden');
+          document.getElementById('pdfPreviewBadge').classList.add('hidden');
           document.getElementById('previewArea').classList.remove('hidden');
         };
         img.src = e.target.result;
@@ -600,12 +649,13 @@
 
     function removeAttachment() {
       state.attachmentBase64 = null;
+      state.attachmentMime = null;
       document.getElementById('attachFile').value = '';
       document.getElementById('previewArea').classList.add('hidden');
     }
 
     // ==========================================
-    // AI APPLICATION LETTER DRAFT GENERATOR
+    // AI FORMAL APPLICATION GENERATOR
     // ==========================================
     let generatedAiText = "";
 
@@ -616,7 +666,6 @@
 
       if (!start) return alert("Please select leave dates on the calendar first.");
 
-      // Check applicant details (Self or Proxy)
       const targetErp = document.getElementById('staffSelect') ? document.getElementById('staffSelect').value : 'SELF';
       let applicantName = state.user.name;
       let applicantDesig = state.user.desig;
@@ -631,7 +680,7 @@
         }
       }
 
-      const inputReason = document.getElementById('applyReason').value.trim() || "urgent domestic work";
+      const inputReason = document.getElementById('applyReason').value.trim() || "urgent domestic affairs";
       const todayStr = Utilities_formatToday();
 
       generatedAiText = 
@@ -851,7 +900,8 @@ Date: ${todayStr}`;
         daysCounted: state.workingDays,
         reason: reason,
         warning: state.warningText,
-        attachmentData: state.attachmentBase64 // Sends compressed base64
+        attachmentData: state.attachmentBase64,
+        fileType: state.attachmentMime
       };
 
       const res = await api('applyCL', payload);
