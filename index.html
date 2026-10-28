@@ -2,944 +2,808 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f4c81">
   <title>APDCL Leave Portal - GESD</title>
-
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="APDCL Leave">
-
   <style>
-    :root {
-      --primary: #0f4c81;
-      --primary-hover: #083358;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --ai-purple: #7c3aed;
-      --holiday-bg: #fee2e2;
-      --holiday-txt: #991b1b;
-      --weekend-bg: #f1f5f9;
-      --weekend-txt: #94a3b8;
-      --rh-bg: #fef3c7;
-      --rh-txt: #92400e;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding: 12px; display: flex; flex-direction: column; align-items: center; }
-
-    .hidden { display: none !important; }
-
-    #installAppBtn {
-      width: 100%; max-width: 520px; padding: 14px; background-color: #10b981;
-      color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
-      cursor: pointer; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-
-    .app-card {
-      background: var(--card-bg); width: 100%; max-width: 520px;
-      border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-      padding: 24px 18px; border: 1px solid #f1f5f9; margin-bottom: 16px;
-    }
-
-    .brand-header { text-align: center; margin-bottom: 18px; }
-    .brand-logo { height: 56px; width: 56px; border-radius: 12px; object-fit: contain; margin-bottom: 8px; }
-    .brand-header h1 { font-size: 19px; font-weight: 700; color: var(--primary); }
-    .brand-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
-
-    .styled-input, select.styled-input, textarea.styled-input {
-      width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid var(--border);
-      font-size: 14px; outline: none; transition: 0.2s; background: #fafafa; margin-bottom: 12px;
-      color: var(--text-main);
-    }
-    .styled-input:focus, textarea.styled-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
-
-    .btn {
-      width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 15px;
-      font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center;
-    }
-    .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25); }
-    .btn-primary:active { background: var(--primary-hover); transform: scale(0.99); }
-    .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
-    .btn-ai { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25); }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; width: auto; display: inline-block; }
-
-    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
-    .stat-chip { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 4px; text-align: center; }
-    .stat-chip .val { font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1.1; }
-    .stat-chip .lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
-
-    .tabs-container { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; gap: 4px; }
-    .tab {
-      flex: 1; text-align: center; padding: 10px 4px; font-size: 13px; font-weight: 700;
-      color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;
-    }
-    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-
-    .cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cal-title { font-size: 16px; font-weight: 700; color: var(--primary); }
-    .nav-arrow { background: #f1f5f9; border: none; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 15px; font-weight: bold; color: var(--primary); }
-
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-    .cal-head { font-size: 11px; font-weight: 700; color: var(--text-muted); padding-bottom: 6px; text-transform: uppercase; }
-
-    .cal-cell {
-      position: relative; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; border-radius: 10px; border: 1px solid var(--border);
-      background: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; user-select: none;
-    }
-    .cal-cell.empty { border: none; background: transparent; cursor: default; }
-    .cal-cell.holiday { background: var(--holiday-bg); color: var(--holiday-txt); border-color: #fecaca; }
-    .cal-cell.weekend { background: var(--weekend-bg); color: var(--weekend-txt); }
-    .cal-cell.rh { background: var(--rh-bg); color: var(--rh-txt); border-color: #fde68a; }
-    .cal-cell.selected { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
-    .cal-cell.in-range { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
-
-    .cal-cell.today::after {
-      content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--primary);
-    }
-    .cal-cell.selected.today::after { background: #ffffff; }
-
-    .day-preview-bar {
-      margin-top: 12px; padding: 10px 14px; border-radius: 10px; font-size: 12px;
-      font-weight: 600; text-align: center; background: #f8fafc; border: 1px dashed var(--border); color: var(--text-muted);
-    }
-
-    .range-summary-card {
-      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px;
-      padding: 12px 14px; margin-top: 14px; font-size: 13px; color: #1e40af; line-height: 1.5;
-    }
-    .warn-card {
-      background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
-      padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #92400e; font-weight: 500;
-    }
-
-    .attach-container {
-      border: 1.5px dashed var(--border); border-radius: 12px; padding: 12px;
-      text-align: center; margin-bottom: 14px; background: #fafafa;
-    }
-    .preview-thumb { max-height: 120px; border-radius: 8px; margin-top: 8px; display: block; margin-left: auto; margin-right: auto; }
-
-    .item-card {
-      border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px;
-      background: #fafafa; display: flex; flex-direction: column; gap: 6px;
-    }
-    .item-top { display: flex; justify-content: space-between; align-items: center; }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .badge-Applied { background: #fef3c7; color: #92400e; }
-    .badge-Recommended { background: #e0f2fe; color: #0369a1; }
-    .badge-Approved { background: #dcfce7; color: #166534; }
-    .badge-Rejected { background: #fee2e2; color: #991b1b; }
-    .badge-Returned { background: #f1f5f9; color: #475569; }
-    .badge-Cancelled { background: #f1f5f9; color: #94a3b8; }
-
-    .gate-overlay {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
-    }
-
-    .proxy-box {
-      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px;
-      padding: 12px; margin-bottom: 14px;
-    }
-
-    .ai-modal-box {
-      background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 20px;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto;
-    }
-    .letter-preview {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; font-family: monospace;
-      margin: 12px 0; color: #1e293b;
-    }
+    :root { --primary:#0f4c81; --primary-hover:#083358; --bg:#f8fafc; --card-bg:#fff; --text-main:#1e293b; --text-muted:#64748b;
+      --border:#e2e8f0; --danger:#ef4444; --success:#10b981; --warning:#f59e0b; --ai-purple:#7c3aed;
+      --holiday-bg:#fee2e2; --holiday-txt:#991b1b; --weekend-bg:#f1f5f9; --weekend-txt:#94a3b8; --rh-bg:#fef3c7; --rh-txt:#92400e; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
+    body { background:var(--bg); color:var(--text-main); min-height:100vh; padding:12px; display:flex; flex-direction:column; align-items:center; }
+    .hidden { display:none !important; }
+    #installAppBtn { width:100%; max-width:520px; padding:14px; background:#10b981; color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-bottom:12px; }
+    .app-card { background:var(--card-bg); width:100%; max-width:520px; border-radius:20px; box-shadow:0 10px 25px -5px rgba(0,0,0,.05); padding:24px 18px; border:1px solid #f1f5f9; margin-bottom:16px; }
+    .app-card.wide { max-width:980px; }
+    .brand-header { text-align:center; margin-bottom:18px; }
+    .brand-logo { height:56px; width:56px; border-radius:12px; object-fit:contain; margin-bottom:8px; }
+    .brand-header h1 { font-size:19px; font-weight:700; color:var(--primary); }
+    .brand-header p { font-size:13px; color:var(--text-muted); margin-top:2px; font-weight:500; }
+    .styled-input, select.styled-input, textarea.styled-input { width:100%; padding:13px 14px; border-radius:12px; border:1.5px solid var(--border); font-size:14px; outline:none; background:#fafafa; margin-bottom:12px; color:var(--text-main); }
+    .styled-input:focus { border-color:var(--primary); background:#fff; box-shadow:0 0 0 3px rgba(15,76,129,.1); }
+    .lbl { font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px; }
+    .btn { width:100%; padding:13px; border-radius:12px; border:none; font-size:15px; font-weight:600; cursor:pointer; text-align:center; }
+    .btn-primary { background:var(--primary); color:#fff; box-shadow:0 4px 12px rgba(15,76,129,.25); }
+    .btn-primary:disabled { background:#cbd5e1; cursor:not-allowed; box-shadow:none; }
+    .btn-ai { background:linear-gradient(135deg,#7c3aed,#4f46e5); color:#fff; margin-bottom:10px; }
+    .btn-danger { background:var(--danger); color:#fff; }
+    .btn-success { background:var(--success); color:#fff; }
+    .btn-ghost { background:#f1f5f9; color:#475569; }
+    .btn-sm { padding:6px 12px; font-size:12px; border-radius:8px; width:auto; display:inline-block; }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:16px; }
+    .stat-chip { background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:10px 4px; text-align:center; }
+    .stat-chip .val { font-size:18px; font-weight:800; color:var(--primary); line-height:1.1; }
+    .stat-chip .lb { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-top:4px; }
+    .tabs-container { display:flex; border-bottom:2px solid var(--border); margin-bottom:16px; gap:4px; overflow-x:auto; }
+    .tab { flex:1; text-align:center; padding:10px 6px; font-size:13px; font-weight:700; color:#94a3b8; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; }
+    .tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+    .cal-controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .cal-title { font-size:16px; font-weight:700; color:var(--primary); }
+    .nav-arrow { background:#f1f5f9; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer; font-size:15px; font-weight:bold; color:var(--primary); }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; text-align:center; }
+    .cal-head { font-size:11px; font-weight:700; color:var(--text-muted); padding-bottom:6px; text-transform:uppercase; }
+    .cal-cell { position:relative; aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:10px; border:1px solid var(--border); background:#fff; font-size:14px; font-weight:600; cursor:pointer; user-select:none; }
+    .cal-cell.empty { border:none; background:transparent; cursor:default; }
+    .cal-cell.holiday { background:var(--holiday-bg); color:var(--holiday-txt); border-color:#fecaca; }
+    .cal-cell.weekend { background:var(--weekend-bg); color:var(--weekend-txt); }
+    .cal-cell.rh { background:var(--rh-bg); color:var(--rh-txt); border-color:#fde68a; }
+    .cal-cell.selected { background:var(--primary) !important; color:#fff !important; border-color:var(--primary) !important; }
+    .cal-cell.in-range { background:#e0f2fe; color:#0369a1; border-color:#bae6fd; }
+    .cal-cell.today::after { content:''; position:absolute; bottom:3px; width:4px; height:4px; border-radius:50%; background:var(--primary); }
+    .legend { display:flex; gap:10px; flex-wrap:wrap; font-size:11px; color:var(--text-muted); margin-top:10px; }
+    .legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:4px; vertical-align:-1px; }
+    .day-preview-bar { margin-top:12px; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:600; text-align:center; background:#f8fafc; border:1px dashed var(--border); color:var(--text-muted); }
+    .range-summary-card { background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:12px 14px; margin-top:14px; font-size:13px; color:#1e40af; line-height:1.5; }
+    .warn-card { background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:10px 12px; margin-top:10px; font-size:12px; color:#92400e; font-weight:500; }
+    .attach-container { border:1.5px dashed var(--border); border-radius:12px; padding:12px; text-align:center; margin-bottom:14px; background:#fafafa; }
+    .preview-thumb { max-height:120px; border-radius:8px; margin:8px auto 0; display:block; }
+    .item-card { border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:10px; background:#fafafa; display:flex; flex-direction:column; gap:6px; }
+    .item-top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; }
+    .badge-Applied { background:#fef3c7; color:#92400e; } .badge-Recommended { background:#e0f2fe; color:#0369a1; }
+    .badge-Approved { background:#dcfce7; color:#166534; } .badge-Rejected { background:#fee2e2; color:#991b1b; }
+    .badge-Returned { background:#f1f5f9; color:#475569; } .badge-Cancelled { background:#f1f5f9; color:#94a3b8; }
+    .gate-overlay { position:fixed; inset:0; background:rgba(15,23,42,.6); display:flex; align-items:center; justify-content:center; z-index:1000; padding:16px; }
+    .proxy-box { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px; margin-bottom:14px; }
+    .modal-box { background:#fff; width:100%; max-width:460px; border-radius:16px; padding:20px; box-shadow:0 20px 25px -5px rgba(0,0,0,.2); max-height:88vh; overflow-y:auto; }
+    .letter-preview { background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:14px; font-size:12px; line-height:1.6; white-space:pre-wrap; font-family:monospace; margin:12px 0; }
+    .table-wrap { overflow-x:auto; margin-bottom:12px; }
+    table.data { width:100%; border-collapse:collapse; font-size:12px; }
+    table.data th { background:#f1f5f9; color:#475569; text-align:left; padding:8px; white-space:nowrap; }
+    table.data td { padding:7px 8px; border-bottom:1px solid var(--border); white-space:nowrap; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .section-title { font-size:14px; font-weight:700; color:var(--primary); margin:14px 0 8px; }
+    .cfg-warn { background:#fffbeb; border:1px solid #fde68a; color:#92400e; font-size:13px; padding:12px; border-radius:12px; margin-bottom:12px; }
+    .err { color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:10px; display:none; }
   </style>
 </head>
 <body>
-
   <button id="installAppBtn" class="hidden" type="button">📲 Install Leave App</button>
 
-  <!-- LOGIN SCREEN -->
+  <!-- LOGIN -->
   <div class="app-card" id="loginScreen">
     <div class="brand-header">
-      <img src="logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <img src="logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
       <h1>APDCL Leave Portal</h1>
       <p>Goalpara Electrical Sub-Division</p>
     </div>
-    
-    <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">EMPLOYEE ERP ID</label>
-    <input type="number" id="loginErp" class="styled-input" placeholder="e.g. 40003847" pattern="\d*">
-    
-    <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">PASSWORD</label>
-    <input type="password" id="loginPass" class="styled-input" placeholder="Default: apdcl">
-    
-    <button id="loginBtn" class="btn btn-primary" onclick="submitLogin()">Sign In</button>
-    <div id="loginError" style="color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:10px; display:none;"></div>
+    <div id="cfgWarn" class="cfg-warn hidden">⚠️ Not connected to Firebase yet. Paste your <b>firebaseConfig</b> at the top of the script in index.html.</div>
+    <label class="lbl">EMPLOYEE ERP ID</label>
+    <input type="text" inputmode="numeric" id="loginErp" class="styled-input" placeholder="e.g. 40003847" autocomplete="username">
+    <label class="lbl">PASSWORD</label>
+    <input type="password" id="loginPass" class="styled-input" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" class="btn btn-primary">Sign In</button>
+    <div id="loginError" class="err"></div>
+    <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:12px;">First time? Use the initial password given by the office — you will be asked to set your own.</p>
   </div>
 
-  <!-- PASSWORD RESET GATE -->
+  <!-- PASSWORD CHANGE (forced on first login, or voluntary) -->
   <div id="passChangeGate" class="gate-overlay hidden">
-    <div class="app-card" style="max-width:380px;">
-      <h2 style="font-size:16px; color:var(--primary); font-weight:700; margin-bottom:6px;">Update Default Password</h2>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Set a personal password to activate your account.</p>
-      <input type="password" id="newPass" class="styled-input" placeholder="New Password (min 5 chars)">
-      <button class="btn btn-primary" onclick="submitPasswordChange()">Update & Enter</button>
-      <div id="changePassMsg" style="color:var(--danger); font-size:12px; margin-top:8px;"></div>
+    <div class="modal-box" style="max-width:380px;">
+      <h2 id="passTitle" style="font-size:16px;color:var(--primary);margin-bottom:6px;">Set your password</h2>
+      <p id="passSub" style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Choose a personal password (at least 8 characters) to activate your account.</p>
+      <input type="password" id="curPass" class="styled-input hidden" placeholder="Current password" autocomplete="current-password">
+      <input type="password" id="newPass" class="styled-input" placeholder="New password (min 8 characters)" autocomplete="new-password">
+      <button class="btn btn-primary" id="passSaveBtn">Save password</button>
+      <button class="btn btn-ghost" id="passCancelBtn" style="margin-top:8px;">Cancel</button>
+      <button class="btn btn-ghost" id="passSignOutBtn" style="margin-top:8px;">Sign out</button>
+      <div id="changePassMsg" style="color:var(--danger);font-size:12px;margin-top:8px;"></div>
     </div>
   </div>
 
-  <!-- AI LETTER PREVIEW MODAL -->
+  <!-- LETTER DRAFT -->
   <div id="aiLetterModal" class="gate-overlay hidden">
-    <div class="ai-modal-box">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size:15px; color:var(--ai-purple); font-weight:700;">✨ Generated Formal Application</h3>
-        <button onclick="closeAiModal()" style="border:none; background:none; font-size:18px; cursor:pointer;">✕</button>
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="font-size:15px;color:var(--ai-purple);">✨ Draft formal application</h3>
+        <button data-act="closeLetter" style="border:none;background:none;font-size:18px;cursor:pointer;">✕</button>
       </div>
       <div class="letter-preview" id="aiGeneratedText"></div>
-      <button class="btn btn-ai" onclick="useAiLetterText()">Use this Letter in Reason</button>
-      <button class="btn btn-sm" style="background:#f1f5f9; color:#475569; width:100%; margin-top:6px;" onclick="copyAiLetter()">Copy to Clipboard</button>
+      <button class="btn btn-ai" data-act="useLetter">Use this letter as the reason</button>
+      <button class="btn btn-ghost btn-sm" style="width:100%;" data-act="copyLetter">Copy to clipboard</button>
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
-  <div class="app-card hidden" id="mainApp">
-    
-    <div class="brand-header" style="display:flex; justify-content:space-between; align-items:center; text-align:left; border-bottom:1px solid var(--border); padding-bottom:12px;">
-      <div>
-        <h1 id="headerUserName" style="font-size:16px; color:var(--text-main);">Staff Member</h1>
-        <p id="headerUserRole" style="font-size:12px; color:var(--text-muted);">Goalpara ESD</p>
+  <!-- EMPLOYEE EDIT MODAL (Admin) -->
+  <div id="empModal" class="gate-overlay hidden">
+    <div class="modal-box">
+      <h3 id="empModalTitle" style="font-size:15px;color:var(--primary);margin-bottom:12px;">Employee</h3>
+      <label class="lbl">ERP ID</label><input id="empErp" class="styled-input" inputmode="numeric">
+      <label class="lbl">NAME</label><input id="empName" class="styled-input">
+      <div class="row2">
+        <div><label class="lbl">DESIGNATION</label><input id="empDesig" class="styled-input"></div>
+        <div><label class="lbl">ROLE</label>
+          <select id="empRole" class="styled-input"><option>EMPLOYEE</option><option>JM</option><option>SMR</option><option>SDE</option><option>ADMIN</option></select></div>
       </div>
-      <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:700; cursor:pointer;">Logout ↗</button>
+      <label class="lbl">FORWARDS APPLICATIONS TO</label><select id="empFwd" class="styled-input"></select>
+      <div class="row2">
+        <div><label class="lbl">CL OPENING BALANCE</label><input id="empOpen" type="number" class="styled-input" value="15"></div>
+        <div><label class="lbl">STATUS</label><select id="empActive" class="styled-input"><option value="1">Active</option><option value="0">Inactive</option></select></div>
+      </div>
+      <p id="empHint" style="font-size:11px;color:var(--text-muted);margin-bottom:10px;"></p>
+      <button class="btn btn-primary" data-act="saveEmp">Save</button>
+      <button class="btn btn-ghost" data-act="closeEmp" style="margin-top:8px;">Cancel</button>
+      <div id="empMsg" style="color:var(--danger);font-size:12px;margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="app-card hidden" id="mainApp">
+    <div class="brand-header" style="display:flex;justify-content:space-between;align-items:center;text-align:left;border-bottom:1px solid var(--border);padding-bottom:12px;">
+      <div>
+        <h1 id="headerUserName" style="font-size:16px;color:var(--text-main);">Staff Member</h1>
+        <p id="headerUserRole" style="font-size:12px;color:var(--text-muted);">Goalpara ESD</p>
+      </div>
+      <div style="text-align:right;">
+        <button data-act="changePass" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:700;cursor:pointer;display:block;margin-left:auto;">Change password</button>
+        <button data-act="logout" style="background:none;border:none;color:var(--danger);font-size:12px;font-weight:700;cursor:pointer;">Logout ↗</button>
+      </div>
     </div>
 
-    <!-- Live Entitlement Chips -->
     <div class="summary-grid">
-      <div class="stat-chip">
-        <div class="val" id="balRemaining">-</div>
-        <div class="lbl">Balance</div>
-      </div>
-      <div class="stat-chip">
-        <div class="val" id="balPending" style="color:var(--warning);">-</div>
-        <div class="lbl">Pending</div>
-      </div>
-      <div class="stat-chip">
-        <div class="val" id="balApproved" style="color:var(--success);">-</div>
-        <div class="lbl">Availed</div>
-      </div>
-      <div class="stat-chip">
-        <div class="val" id="balOpening">15</div>
-        <div class="lbl">Total</div>
-      </div>
+      <div class="stat-chip"><div class="val" id="balRemaining">-</div><div class="lb">Balance</div></div>
+      <div class="stat-chip"><div class="val" id="balPending" style="color:var(--warning);">-</div><div class="lb">Pending</div></div>
+      <div class="stat-chip"><div class="val" id="balApproved" style="color:var(--success);">-</div><div class="lb">Availed</div></div>
+      <div class="stat-chip"><div class="val" id="balOpening">-</div><div class="lb">Total</div></div>
     </div>
 
     <div class="tabs-container">
       <div class="tab active" data-target="view-apply">Apply Leave</div>
       <div class="tab" data-target="view-history">My Leaves</div>
       <div class="tab hidden" id="tabInboxBtn" data-target="view-inbox">Inbox (<span id="inboxBadge">0</span>)</div>
+      <div class="tab hidden" id="tabRecordsBtn" data-target="view-records">Records</div>
+      <div class="tab hidden" id="tabAdminBtn" data-target="view-admin">Admin</div>
     </div>
 
-    <!-- VIEW 1: APPLY LEAVE -->
+    <!-- APPLY -->
     <div id="view-apply" class="tab-view">
-
-      <!-- PROXY APPLICATION CONTROLS -->
       <div id="proxyContainer" class="proxy-box hidden">
-        <label style="font-size:12px; font-weight:700; color:#166534; display:block; margin-bottom:6px;">APPLYING ON BEHALF OF:</label>
-        <select id="staffSelect" class="styled-input" style="margin-bottom:8px;" onchange="onTargetStaffChanged()">
-          <option value="SELF">Myself (My Own Leave)</option>
-        </select>
-
-        <label style="font-size:12px; font-weight:700; color:#166534; display:block; margin-bottom:6px;">FORWARD APPLICATION TO:</label>
-        <select id="approverSelect" class="styled-input" style="margin-bottom:0;">
-          <option value="DEFAULT">Default Hierarchy</option>
-          <option value="40004535">Joy Gopal Goswami (SDE - Direct)</option>
-          <option value="40011937">Shahjubin Rahman (SMR)</option>
-          <option value="40007937">Abdur Rezzak (JM)</option>
-          <option value="40013113">Asraful Hussain (JM)</option>
-          <option value="40011246">Bitu Saha (JM)</option>
-          <option value="40013360">Pran Krishna Nath (JM)</option>
-        </select>
+        <label class="lbl" style="color:#166534;">APPLYING ON BEHALF OF:</label>
+        <select id="staffSelect" class="styled-input" style="margin-bottom:8px;"><option value="SELF">Myself (My Own Leave)</option></select>
+        <label class="lbl" style="color:#166534;">FORWARD APPLICATION TO:</label>
+        <select id="approverSelect" class="styled-input" style="margin-bottom:0;"><option value="DEFAULT">Default routing</option></select>
       </div>
 
       <div class="cal-controls">
-        <button class="nav-arrow" onclick="navMonth(-1)">‹</button>
-        <div class="cal-title" id="calMonthTitle">Current Month</div>
-        <button class="nav-arrow" onclick="navMonth(1)">›</button>
+        <button class="nav-arrow" data-act="prevMonth">‹</button>
+        <div class="cal-title" id="calMonthTitle">Month</div>
+        <button class="nav-arrow" data-act="nextMonth">›</button>
       </div>
-
       <div class="cal-grid">
-        <div class="cal-head">Su</div><div class="cal-head">Mo</div>
-        <div class="cal-head">Tu</div><div class="cal-head">We</div>
-        <div class="cal-head">Th</div><div class="cal-head">Fr</div>
-        <div class="cal-head">Sa</div>
+        <div class="cal-head">Su</div><div class="cal-head">Mo</div><div class="cal-head">Tu</div><div class="cal-head">We</div><div class="cal-head">Th</div><div class="cal-head">Fr</div><div class="cal-head">Sa</div>
       </div>
       <div class="cal-grid" id="calGrid"></div>
-
-      <div id="dayInspectionBar" class="day-preview-bar">Tap a date to inspect or select leave range</div>
+      <div class="legend"><span><i style="background:#fee2e2"></i>Holiday</span><span><i style="background:#f1f5f9"></i>Sunday / 2nd-4th Sat</span><span><i style="background:#fef3c7"></i>Restricted / Half</span><span><i style="background:#0f4c81"></i>Selected</span></div>
+      <div id="dayInspectionBar" class="day-preview-bar">Tap a date to see details, then tap an end date to select a range</div>
 
       <div id="calcBox" class="hidden">
         <div class="range-summary-card">
-          Selected Period: <strong id="rangeText"></strong><br>
-          Counted Working Days: <strong id="countedDaysText" style="font-size:16px;">0</strong> (CL days)
+          Selected period: <strong id="rangeText"></strong><br>
+          Counted working days: <strong id="countedDaysText" style="font-size:16px;">0</strong> (CL)
         </div>
         <div id="adjacencyAlert" class="warn-card hidden"></div>
-
-        <!-- AI APPLICATION DRAFT GENERATOR -->
-        <div style="margin-top:14px;">
-          <button type="button" class="btn btn-ai" onclick="generateAiApplication()">✨ AI Draft Formal Application Letter</button>
-        </div>
-
-        <div style="margin-top:4px;">
-          <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">REASON / APPLICATION TEXT</label>
-          <textarea id="applyReason" class="styled-input" rows="3" placeholder="e.g. Urgent domestic work / Sick leave"></textarea>
-        </div>
-
-        <!-- DOCUMENT / PDF / PHOTO ATTACHMENT -->
+        <div style="margin-top:14px;"><button type="button" class="btn btn-ai" data-act="draftLetter">✨ Draft formal application letter</button></div>
+        <label class="lbl">REASON / APPLICATION TEXT</label>
+        <textarea id="applyReason" class="styled-input" rows="3" maxlength="1500" placeholder="e.g. Urgent domestic work / Sick leave"></textarea>
         <div class="attach-container">
-          <label style="font-size:12px; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">
-            📎 ATTACH PDF / APPLICATION PHOTO / MEDICAL SLIP (OPTIONAL)
-          </label>
-          <input type="file" id="attachFile" accept="application/pdf,image/*" style="font-size:12px;" onchange="handleFileSelected(event)">
-          
+          <label class="lbl" style="color:var(--text-main);">📎 ATTACH PDF / PHOTO (OPTIONAL, max 600 KB — photos are shrunk automatically)</label>
+          <input type="file" id="attachFile" accept="application/pdf,image/*" style="font-size:12px;">
           <div id="previewArea" class="hidden" style="margin-top:8px;">
-            <img id="imgPreview" class="preview-thumb hidden">
-            <div id="pdfPreviewBadge" class="hidden" style="background:#e0f2fe; color:#0369a1; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:600; display:inline-block;">
-              📄 <span id="pdfFileName">document.pdf</span>
-            </div>
-            <div style="margin-top:6px;">
-              <button type="button" class="btn btn-sm btn-danger" onclick="removeAttachment()">Remove Attachment</button>
-            </div>
+            <img id="imgPreview" class="preview-thumb hidden" alt="">
+            <div id="pdfPreviewBadge" class="hidden" style="background:#e0f2fe;color:#0369a1;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;display:inline-block;">📄 <span id="pdfFileName"></span></div>
+            <div style="margin-top:6px;"><button type="button" class="btn btn-sm btn-danger" data-act="removeAttach">Remove attachment</button></div>
           </div>
         </div>
-
-        <button id="submitLeaveBtn" class="btn btn-primary" onclick="submitApplication()">Submit Application</button>
+        <button id="submitLeaveBtn" class="btn btn-primary" data-act="submitApp">Submit Application</button>
       </div>
     </div>
 
-    <!-- VIEW 2: HISTORY -->
-    <div id="view-history" class="tab-view hidden">
-      <div id="historyList"></div>
+    <div id="view-history" class="tab-view hidden"><div id="historyList"></div></div>
+    <div id="view-inbox" class="tab-view hidden"><div id="inboxList"></div></div>
+
+    <!-- RECORDS -->
+    <div id="view-records" class="tab-view hidden">
+      <div class="row2">
+        <select id="recStatus" class="styled-input"><option value="">All statuses</option><option>Applied</option><option>Recommended</option><option>Approved</option><option>Rejected</option><option>Returned</option><option>Cancelled</option></select>
+        <input id="recSearch" class="styled-input" placeholder="Search name / ERP / ID">
+      </div>
+      <button class="btn btn-ghost btn-sm" data-act="downloadCsv" style="margin-bottom:10px;">⬇ Download Excel-ready CSV</button>
+      <div class="table-wrap"><table class="data"><thead><tr><th>ID</th><th>Name</th><th>ERP</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th>With</th></tr></thead><tbody id="recBody"></tbody></table></div>
     </div>
 
-    <!-- VIEW 3: INBOX -->
-    <div id="view-inbox" class="tab-view hidden">
-      <div id="inboxList"></div>
+    <!-- ADMIN -->
+    <div id="view-admin" class="tab-view hidden">
+      <div class="section-title">Employees</div>
+      <button class="btn btn-primary btn-sm" data-act="addEmp" style="margin-bottom:10px;">＋ Add employee</button>
+      <div class="table-wrap"><table class="data"><thead><tr><th>ERP</th><th>Name</th><th>Desig.</th><th>Role</th><th>Forwards to</th><th>CL</th><th>Status</th><th></th></tr></thead><tbody id="empBody"></tbody></table></div>
+      <p style="font-size:11px;color:var(--text-muted);">Forgot-password resets are done with <code>node admin-tools.js reset &lt;ERP&gt;</code> (see README).</p>
+      <div class="section-title">Holidays</div>
+      <div class="row2">
+        <input id="holDate" type="date" class="styled-input">
+        <select id="holType" class="styled-input"><option>Holiday</option><option>Half Holiday</option><option>Restricted</option></select>
+      </div>
+      <input id="holName" class="styled-input" placeholder="Holiday name">
+      <button class="btn btn-primary btn-sm" data-act="addHol" style="margin-bottom:10px;">＋ Add holiday</button>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Date</th><th>Name</th><th>Type</th><th></th></tr></thead><tbody id="holBody"></tbody></table></div>
     </div>
-
   </div>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+<script type="module">
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, updatePassword,
+         createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where,
+         writeBatch, arrayUnion, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+/* ================= CONFIG: paste your Firebase web-app config here ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyCablwuJxaHcVpq0pawgRnfI9Zw7Gf9H40",
+  authDomain: "goalpara-leave.firebaseapp.com",
+  projectId: "goalpara-leave",
+  appId: "1:1052183286252:web:2e6a4f2567672050b070c9"
+};
+/* =================================================================================== */
+
+const CONFIGURED = !String(firebaseConfig.apiKey).startsWith("PASTE");
+let auth = null, db = null;
+if (CONFIGURED) { const fbApp = initializeApp(firebaseConfig); auth = getAuth(fbApp); db = getFirestore(fbApp); }
+
+const CL_MAX_DAYS = 3;
+const MAX_ATTACH_BYTES = 600 * 1024;
+const SUPERVISORS = ['JM', 'SMR', 'SDE', 'ADMIN'];
+const APPROVERS = ['JM', 'SMR', 'SDE'];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const ymd = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const parseYmd = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const fmtDate = (s) => { if (!s) return ''; const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; };
+const emailFor = (erp) => `${erp}@leave.apdcl.local`;
+
+const state = { me: null, holidays: {}, staff: [], myApps: [], inbox: [], allApps: [], viewDate: new Date(),
+                selStart: null, selEnd: null, days: 0, warn: '', att: null, passForced: false, editErp: null };
+let pendingLoginMsg = '';
+const resetState = () => Object.assign(state, { me: null, holidays: {}, staff: [], myApps: [], inbox: [], allApps: [],
+  selStart: null, selEnd: null, days: 0, warn: '', att: null, passForced: false, editErp: null, viewDate: new Date() });
+
+/* ---------------- login / session ---------------- */
+function friendlyError(e) {
+  const c = (e && e.code) || '';
+  if (['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(c)) return 'Invalid ERP ID or password.';
+  if (c === 'auth/too-many-requests') return 'Too many attempts. Please wait a few minutes and try again.';
+  if (c === 'auth/network-request-failed') return 'Network error. Check your internet connection.';
+  if (c === 'auth/requires-recent-login') return 'For security, sign out, sign in again, then retry.';
+  if (c === 'auth/weak-password') return 'Password is too weak.';
+  if (c === 'auth/email-already-in-use') return 'A login already exists for this ERP ID.';
+  if (c === 'permission-denied') return 'Not allowed. Your account may be inactive or lack access.';
+  return (e && e.message) || 'Something went wrong.';
+}
+function showLogin(msg) {
+  resetState();
+  $('mainApp').classList.add('hidden'); $('mainApp').classList.remove('wide'); $('passChangeGate').classList.add('hidden');
+  $('loginScreen').classList.remove('hidden');
+  $('loginBtn').disabled = false; $('loginBtn').textContent = 'Sign In'; $('loginPass').value = '';
+  const err = $('loginError');
+  if (msg) { err.textContent = msg; err.style.display = 'block'; } else err.style.display = 'none';
+}
+async function submitLogin() {
+  const erp = $('loginErp').value.trim(), pass = $('loginPass').value, err = $('loginError');
+  err.style.display = 'none';
+  if (!CONFIGURED) { err.textContent = 'App is not connected to Firebase yet.'; err.style.display = 'block'; return; }
+  if (!/^\d{6,10}$/.test(erp) || !pass) { err.textContent = 'Enter your ERP ID and password.'; err.style.display = 'block'; return; }
+  $('loginBtn').disabled = true; $('loginBtn').textContent = 'Verifying...';
+  try { await signInWithEmailAndPassword(auth, emailFor(erp), pass); }   // onAuthStateChanged continues from here
+  catch (e) { showLogin(friendlyError(e)); }
+}
+async function loadProfile(user) {
+  const acc = await getDoc(doc(db, 'accounts', user.uid));
+  if (!acc.exists()) throw new Error('This login is not linked to an employee. Contact the Admin.');
+  const erp = acc.data().erp;
+  const emp = await getDoc(doc(db, 'employees', erp));
+  if (!emp.exists() || emp.data().active !== true) throw new Error('Your account is inactive. Contact the Admin.');
+  state.me = { ...emp.data(), erp };
+  if (state.me.mustChange) { openPasswordModal(true); return; }
+  await boot();
+}
+if (CONFIGURED) {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { const m = pendingLoginMsg; pendingLoginMsg = ''; showLogin(m); return; }
+    try { await loadProfile(user); }
+    catch (e) { pendingLoginMsg = friendlyError(e); try { await signOut(auth); } catch (_) { showLogin(pendingLoginMsg); } }
+  });
+} else { $('cfgWarn').classList.remove('hidden'); }
+
+async function logout() { try { await signOut(auth); } catch (_) {} }
+
+/* ---------------- password ---------------- */
+function openPasswordModal(forced) {
+  state.passForced = forced;
+  $('passTitle').textContent = forced ? 'Set your password' : 'Change password';
+  $('passSub').textContent = forced ? 'Choose a personal password (at least 8 characters) to activate your account.' : 'Enter your current password, then a new one (at least 8 characters).';
+  $('curPass').classList.toggle('hidden', forced);
+  $('passCancelBtn').classList.toggle('hidden', forced);
+  $('passSignOutBtn').classList.toggle('hidden', !forced);
+  $('curPass').value = ''; $('newPass').value = ''; $('changePassMsg').textContent = '';
+  $('passChangeGate').classList.remove('hidden');
+}
+async function submitPasswordChange() {
+  const msg = $('changePassMsg'); msg.textContent = '';
+  const cur = $('curPass').value, np = $('newPass').value, user = auth.currentUser, forced = state.passForced;
+  if (np.length < 8) { msg.textContent = 'Use at least 8 characters.'; return; }
+  if (np === state.me.erp) { msg.textContent = 'Password cannot be your ERP ID.'; return; }
+  try {
+    if (!forced) {
+      if (!cur) { msg.textContent = 'Enter your current password.'; return; }
+      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, cur));
     }
+    await updatePassword(user, np);
+    if (state.me.mustChange) { await updateDoc(doc(db, 'employees', state.me.erp), { mustChange: false }); state.me.mustChange = false; }
+    $('passChangeGate').classList.add('hidden');
+    if (forced) await boot(); else alert('Password updated.');
+  } catch (e) { msg.textContent = friendlyError(e); }
+}
 
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhTqrIAdOgIiWR9Swjbf68q9HoC0gPt6TZZHceUAQtMl9NPsXhSkl7WNpOXtw6VK7F/exec";
+/* ---------------- boot & data ---------------- */
+async function boot() {
+  $('loginScreen').classList.add('hidden'); $('mainApp').classList.remove('hidden'); $('loginPass').value = '';
+  const r = state.me.role;
+  $('headerUserName').textContent = state.me.name;
+  $('headerUserRole').textContent = `${state.me.desig} (ERP: ${state.me.erp})`;
+  $('tabInboxBtn').classList.toggle('hidden', !APPROVERS.includes(r));
+  $('tabRecordsBtn').classList.toggle('hidden', !['SDE', 'ADMIN'].includes(r));
+  $('tabAdminBtn').classList.toggle('hidden', r !== 'ADMIN');
+  $('proxyContainer').classList.toggle('hidden', !SUPERVISORS.includes(r));
+  activateTab('view-apply');
+  await refreshData();
+  renderCalendar();
+}
+function balanceFrom(apps, opening) {
+  let approved = 0, pending = 0;
+  apps.forEach(a => { if (a.status === 'Approved') approved += a.days; else if (a.status === 'Applied' || a.status === 'Recommended') pending += a.days; });
+  return { opening, approved, pending, remaining: opening - approved - pending };
+}
+async function refreshData() {
+  const [hol, mine] = await Promise.all([
+    getDocs(collection(db, 'holidays')),
+    getDocs(query(collection(db, 'applications'), where('erp', '==', state.me.erp)))
+  ]);
+  state.holidays = {};
+  hol.docs.forEach(d => { const h = d.data(); if (!state.holidays[h.date]) state.holidays[h.date] = []; state.holidays[h.date].push(h); });
+  state.myApps = mine.docs.map(d => d.data()).sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+  const b = balanceFrom(state.myApps, state.me.clOpening || 0);
+  $('balOpening').textContent = b.opening; $('balApproved').textContent = b.approved;
+  $('balPending').textContent = b.pending; $('balRemaining').textContent = b.remaining;
+  if (SUPERVISORS.includes(state.me.role)) { await loadStaff(); if (APPROVERS.includes(state.me.role)) await loadInbox(); }
+  renderHistory(); renderInbox();
+}
+async function loadStaff() {
+  const snap = await getDocs(collection(db, 'employees'));
+  state.staff = snap.docs.map(d => ({ ...d.data(), erp: d.id })).sort((a, b) => a.name.localeCompare(b.name));
+  fillStaffSelects();
+}
+async function loadInbox() {
+  const jobs = [getDocs(query(collection(db, 'applications'), where('currentApprover', '==', state.me.erp)))];
+  if (state.me.role === 'SDE') jobs.push(getDocs(query(collection(db, 'applications'), where('status', 'in', ['Applied', 'Recommended']))));
+  const seen = {};
+  (await Promise.all(jobs)).forEach(s => s.docs.forEach(d => { seen[d.id] = d.data(); }));
+  state.inbox = Object.values(seen).filter(a => ['Applied', 'Recommended'].includes(a.status) && a.erp !== state.me.erp)
+    .sort((a, b) => (a.createdAtMs || 0) - (b.createdAtMs || 0));
+}
 
-    let state = {
-      token: localStorage.getItem('apdcl_leave_token') || null,
-      user: JSON.parse(localStorage.getItem('apdcl_leave_user') || 'null'),
-      holidays: {},
-      staffList: [],
-      selectedStart: null,
-      selectedEnd: null,
-      viewDate: new Date(),
-      workingDays: 0,
-      warningText: "",
-      attachmentBase64: null,
-      attachmentMime: null
-    };
+/* ---------------- tabs ---------------- */
+function activateTab(target) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.target === target));
+  document.querySelectorAll('.tab-view').forEach(v => v.classList.toggle('hidden', v.id !== target));
+  $('mainApp').classList.toggle('wide', target === 'view-records' || target === 'view-admin');
+  if (target === 'view-records') loadRecords();
+  if (target === 'view-admin') renderAdmin();
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => activateTab(t.dataset.target)));
 
-    // Install Banner Logic
-    const installBtn = document.getElementById('installAppBtn');
-    let deferredPrompt = null;
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+/* ---------------- calendar ---------------- */
+function classify(d) {
+  const entries = state.holidays[ymd(d)] || [];
+  const gaz = entries.filter(e => e.type === 'Holiday'), half = entries.filter(e => e.type === 'Half Holiday'), rh = entries.filter(e => e.type === 'Restricted');
+  const names = (a) => a.map(e => e.name).join(' / ');
+  if (gaz.length) return { type: 'holiday', label: `Holiday: ${names(gaz)}` + (rh.length ? ` (also Restricted: ${names(rh)})` : '') };
+  const dow = d.getDay();
+  if (dow === 0) return { type: 'weekend', label: 'Sunday (Weekly Off)' };
+  if (dow === 6) { const n = Math.ceil(d.getDate() / 7); if (n === 2 || n === 4) return { type: 'weekend', label: `${n === 2 ? '2nd' : '4th'} Saturday Holiday` }; }
+  if (half.length) return { type: 'rh', label: names(half) };
+  if (rh.length) return { type: 'rh', label: `Restricted Holiday: ${names(rh)}` };
+  return { type: 'work', label: 'Working Day' };
+}
+const isOff = (d) => { const t = classify(d).type; return t === 'holiday' || t === 'weekend'; };
+function countWorkingDays(fromStr, toStr) {
+  const cur = parseYmd(fromStr), end = parseYmd(toStr); let n = 0;
+  while (cur <= end) { if (!isOff(cur)) n++; cur.setDate(cur.getDate() + 1); }
+  return n;
+}
+function renderCalendar() {
+  const grid = $('calGrid'); grid.innerHTML = '';
+  const y = state.viewDate.getFullYear(), m = state.viewDate.getMonth();
+  const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  $('calMonthTitle').textContent = `${names[m]} ${y}`;
+  const firstDow = new Date(y, m, 1).getDay(), count = new Date(y, m + 1, 0).getDate(), today = ymd(new Date());
+  for (let i = 0; i < firstDow; i++) { const e = document.createElement('div'); e.className = 'cal-cell empty'; grid.appendChild(e); }
+  for (let d = 1; d <= count; d++) {
+    const dObj = new Date(y, m, d), key = ymd(dObj), info = classify(dObj);
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell'; cell.textContent = d; cell.dataset.date = key;
+    if (info.type !== 'work') cell.classList.add(info.type);
+    if (key === today) cell.classList.add('today');
+    if (state.selStart === key || state.selEnd === key) cell.classList.add('selected');
+    if (state.selStart && state.selEnd && key > state.selStart && key < state.selEnd) cell.classList.add('in-range');
+    cell.title = `${fmtDate(key)}: ${info.label}`;
+    cell.addEventListener('click', () => onCellSelect(key, info.label));
+    grid.appendChild(cell);
+  }
+}
+function onCellSelect(key, label) {
+  $('dayInspectionBar').textContent = `📅 ${fmtDate(key)} — ${label}`;
+  if (!state.selStart || (state.selStart && state.selEnd)) { state.selStart = key; state.selEnd = null; }
+  else if (key < state.selStart) { state.selStart = key; state.selEnd = null; }
+  else state.selEnd = key;
+  calcRange(); renderCalendar();
+}
+function calcRange() {
+  const box = $('calcBox'), alertEl = $('adjacencyAlert'), btn = $('submitLeaveBtn');
+  alertEl.classList.add('hidden'); state.warn = '';
+  if (!state.selStart) { box.classList.add('hidden'); return; }
+  const endStr = state.selEnd || state.selStart;
+  $('rangeText').textContent = `${fmtDate(state.selStart)} to ${fmtDate(endStr)}`;
+  state.days = countWorkingDays(state.selStart, endStr);
+  $('countedDaysText').textContent = state.days; box.classList.remove('hidden');
+  if (state.days < 1 || state.days > CL_MAX_DAYS) {
+    alertEl.textContent = `Casual Leave can only be availed for 1 to ${CL_MAX_DAYS} working days.`; alertEl.classList.remove('hidden'); btn.disabled = true; return;
+  }
+  const prev = parseYmd(state.selStart); prev.setDate(prev.getDate() - 1);
+  const next = parseYmd(endStr); next.setDate(next.getDate() + 1);
+  if (classify(prev).type !== 'work' || classify(next).type !== 'work') {
+    state.warn = 'CL is adjacent to Sunday/Holiday/2nd or 4th Saturday.';
+    alertEl.textContent = `Note: ${state.warn} (The approver will review this.)`; alertEl.classList.remove('hidden');
+  }
+  btn.disabled = false;
+}
 
-    if (!isStandalone) {
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.classList.remove('hidden');
-      });
+/* ---------------- attachments ---------------- */
+function loadImage(file) {
+  return new Promise((res, rej) => { const fr = new FileReader();
+    fr.onload = () => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = fr.result; };
+    fr.onerror = rej; fr.readAsDataURL(file); });
+}
+async function compressImage(file) {
+  const img = await loadImage(file);
+  for (const [maxDim, q] of [[1200, .7], [1000, .6], [900, .55], [800, .5], [700, .45]]) {
+    let w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) { if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; } else { w = Math.round(w * maxDim / h); h = maxDim; } }
+    const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const b64 = c.toDataURL('image/jpeg', q).split(',')[1];
+    if (Math.floor(b64.length * 3 / 4) <= MAX_ATTACH_BYTES) return { b64, mime: 'image/jpeg', name: (file.name || 'photo').replace(/\.[^.]+$/, '') + '.jpg' };
+  }
+  throw new Error('Image is still too large after compression. Please take a smaller photo.');
+}
+async function handleFile(file) {
+  if (!file) return;
+  try {
+    if (file.type === 'application/pdf') {
+      if (file.size > MAX_ATTACH_BYTES) throw new Error('PDF is larger than 600 KB. Compress it or attach a photo instead.');
+      const b64 = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(file); });
+      state.att = { b64, mime: 'application/pdf', name: file.name };
+      $('pdfFileName').textContent = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+      $('pdfPreviewBadge').classList.remove('hidden'); $('imgPreview').classList.add('hidden');
+    } else if (file.type.startsWith('image/')) {
+      state.att = await compressImage(file);
+      $('imgPreview').src = 'data:image/jpeg;base64,' + state.att.b64; $('imgPreview').classList.remove('hidden'); $('pdfPreviewBadge').classList.add('hidden');
+    } else throw new Error('Only PDF or photo files are allowed.');
+    $('previewArea').classList.remove('hidden');
+  } catch (e) { alert(e.message); removeAttach(); }
+}
+function removeAttach() { state.att = null; $('attachFile').value = ''; $('previewArea').classList.add('hidden'); }
+$('attachFile').addEventListener('change', (e) => handleFile(e.target.files[0]));
+async function viewAttachment(appId) {
+  const w = window.open('', '_blank');
+  try {
+    const s = await getDoc(doc(db, 'attachments', appId));
+    if (!s.exists()) throw new Error('Attachment not found.');
+    const { b64, mime } = s.data(), bin = atob(b64), arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([arr], { type: mime }));
+    if (w) w.location.href = url; else location.href = url;
+  } catch (e) { if (w) w.close(); alert(friendlyError(e)); }
+}
 
-      installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') installBtn.classList.add('hidden');
-        deferredPrompt = null;
-      });
+/* ---------------- apply ---------------- */
+function fillStaffSelects() {
+  const active = state.staff.filter(s => s.active);
+  $('staffSelect').innerHTML = '<option value="SELF">Myself (My Own Leave)</option>' +
+    active.map(s => `<option value="${esc(s.erp)}">${esc(s.name)} (${esc(s.desig)} - ${esc(s.erp)})</option>`).join('');
+  $('approverSelect').innerHTML = '<option value="DEFAULT">Default routing</option>' +
+    active.filter(s => APPROVERS.includes(s.role)).map(s => `<option value="${esc(s.erp)}">${esc(s.name)} (${esc(s.desig)})</option>`).join('');
+}
+const staffByErp = (erp) => state.staff.find(s => s.erp === erp);
+async function fetchAppsFor(erp) {
+  if (erp === state.me.erp) return state.myApps;
+  try { return (await getDocs(query(collection(db, 'applications'), where('erp', '==', erp)))).docs.map(d => d.data()); }
+  catch (_) { return null; }   // not permitted to read this person's records; skip the client-side check
+}
+$('staffSelect').addEventListener('change', () => {
+  const s = staffByErp($('staffSelect').value);
+  $('approverSelect').value = s && s.forwardsTo && s.forwardsTo !== 'NONE' ? s.forwardsTo : 'DEFAULT';
+});
+function targetPerson() {
+  const v = $('staffSelect').value;
+  return v === 'SELF' ? state.me : (staffByErp(v) || null);
+}
+async function submitApplication() {
+  const btn = $('submitLeaveBtn'), reason = $('applyReason').value.trim();
+  if (!reason) return alert('Please specify the reason for absence.');
+  const target = targetPerson();
+  if (!target) return alert('Selected staff member not found.');
+  if (target.role === 'SDE') return alert("The SDE's own leave is not processed in this portal.");
+  const from = state.selStart, to = state.selEnd || state.selStart;
+  const days = countWorkingDays(from, to);
+  if (days < 1 || days > CL_MAX_DAYS) return alert(`Casual Leave must be 1 to ${CL_MAX_DAYS} working days.`);
 
-      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        installBtn.textContent = '📲 Install App: Tap Share → Add to Home Screen';
-        installBtn.classList.remove('hidden');
-        installBtn.onclick = () => alert('Tap Share icon at bottom of Safari and select "Add to Home Screen".');
+  let approver = $('approverSelect').value;
+  if (approver === 'DEFAULT') approver = target.forwardsTo;
+  if (!approver || approver === 'NONE' || approver === target.erp) return alert('No approver is configured for this employee. Contact the Admin.');
+
+  btn.disabled = true; btn.textContent = 'Checking...';
+  try {
+    const theirs = await fetchAppsFor(target.erp);
+    if (theirs) {
+      const live = theirs.filter(a => ['Applied', 'Recommended', 'Approved'].includes(a.status));
+      const clash = live.find(a => a.fromDate <= to && from <= a.toDate);
+      if (clash) throw new Error(`Overlaps an existing application (${clash.appId}: ${fmtDate(clash.fromDate)} to ${fmtDate(clash.toDate)}, ${clash.status}).`);
+      const opening = target.erp === state.me.erp ? (state.me.clOpening || 0) : (target.clOpening || 0);
+      const bal = balanceFrom(theirs, opening);
+      if (days > bal.remaining) throw new Error(`Insufficient CL balance for ${target.name}. Available: ${bal.remaining}`);
+    }
+    btn.textContent = 'Submitting...';
+    const appId = 'LV-' + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).slice(2, 5).toUpperCase();
+    const proxy = target.erp !== state.me.erp;
+    const entry = { at: new Date().toISOString(), by: state.me.erp, byName: state.me.name, action: 'Apply', remarks: proxy ? 'Filed on behalf of the employee' : '' };
+    const data = { appId, erp: target.erp, name: target.name, desig: target.desig, leaveType: 'CL', fromDate: from, toDate: to, days,
+      reason: reason.slice(0, 1500), warning: state.warn || '', status: 'Applied', currentApprover: approver, chain: [],
+      createdBy: state.me.erp, createdByName: state.me.name, createdAtMs: Date.now(), createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+      history: [entry], hasAttachment: !!state.att, attachmentName: state.att ? state.att.name : '' };
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'applications', appId), data);
+    if (state.att) batch.set(doc(db, 'attachments', appId), { b64: state.att.b64, mime: state.att.mime, name: state.att.name, createdBy: state.me.erp, erp: target.erp, createdAtMs: Date.now() });
+    await batch.commit();
+    alert(`Leave application ${appId} submitted successfully!`);
+    state.selStart = state.selEnd = null; removeAttach(); $('applyReason').value = ''; $('calcBox').classList.add('hidden');
+    await refreshData(); renderCalendar();
+  } catch (e) { alert(friendlyError(e)); }
+  btn.disabled = false; btn.textContent = 'Submit Application';
+}
+
+/* ---------------- lists ---------------- */
+const histHtml = (h) => (h || []).filter(x => x.action !== 'Apply' && (x.remarks || x.action)).map(x =>
+  `<div style="font-size:11px;color:var(--text-muted);">↳ ${esc(x.byName || x.by)} — ${esc(x.action)}${x.remarks ? ': ' + esc(x.remarks) : ''}</div>`).join('');
+const attBtn = (a) => a.hasAttachment ? `<div><button class="btn btn-sm" style="background:#e0f2fe;color:#0369a1;font-weight:700;" data-act="viewAtt" data-id="${esc(a.appId)}">📄 View attachment ↗</button></div>` : '';
+function renderHistory() {
+  $('historyList').innerHTML = state.myApps.length ? state.myApps.map(a => `
+    <div class="item-card">
+      <div class="item-top"><span style="font-weight:700;font-size:13px;color:var(--primary);">${esc(a.appId)}</span><span class="badge badge-${esc(a.status)}">${esc(a.status)}</span></div>
+      <div style="font-size:13px;font-weight:600;">📅 ${esc(fmtDate(a.fromDate))} to ${esc(fmtDate(a.toDate))} (${esc(a.days)} days)</div>
+      <div style="font-size:12px;color:var(--text-muted);">${esc(a.reason)}</div>
+      ${attBtn(a)}${histHtml(a.history)}
+      ${(a.status === 'Applied' || a.status === 'Recommended') ? `<div><button class="btn btn-danger btn-sm" data-act="cancel" data-id="${esc(a.appId)}">Cancel leave</button></div>` : ''}
+    </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">No leave applications found.</div>';
+}
+function renderInbox() {
+  $('inboxBadge').textContent = state.inbox.length;
+  const sde = state.me && state.me.role === 'SDE';
+  $('inboxList').innerHTML = state.inbox.length ? state.inbox.map(a => {
+    const recomputed = countWorkingDays(a.fromDate, a.toDate);
+    return `<div class="item-card">
+      <div class="item-top"><div><div style="font-weight:700;font-size:14px;">${esc(a.name)}</div><div style="font-size:11px;color:var(--text-muted);">ERP: ${esc(a.erp)} · ${esc(a.desig)} · ${esc(a.appId)}</div></div>
+        <span class="badge badge-${esc(a.status)}">${esc(a.status)}</span></div>
+      <div style="font-size:13px;font-weight:600;margin-top:4px;">📅 ${esc(fmtDate(a.fromDate))} to ${esc(fmtDate(a.toDate))} (${esc(a.days)} days)</div>
+      <div style="font-size:12px;color:var(--text-muted);">${esc(a.reason)}</div>
+      ${attBtn(a)}${histHtml(a.history)}
+      ${a.warning ? `<div style="font-size:11px;color:var(--danger);font-weight:600;">⚠️ ${esc(a.warning)}</div>` : ''}
+      ${recomputed !== a.days ? `<div style="font-size:11px;color:var(--danger);font-weight:700;">⚠️ Day count mismatch: application says ${esc(a.days)}, calendar gives ${recomputed}. Verify before approving.</div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        ${sde ? `<button class="btn btn-success btn-sm" data-act="decide" data-decision="Approve" data-id="${esc(a.appId)}">Approve</button>
+                 <button class="btn btn-danger btn-sm" data-act="decide" data-decision="Reject" data-id="${esc(a.appId)}">Reject</button>`
+              : `<button class="btn btn-success btn-sm" data-act="decide" data-decision="Recommend" data-id="${esc(a.appId)}">Forward</button>`}
+        <button class="btn btn-ghost btn-sm" data-act="decide" data-decision="Return" data-id="${esc(a.appId)}">Return</button>
+      </div></div>`;
+  }).join('') : '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">No pending actions for you.</div>';
+}
+async function handleDecision(appId, decision) {
+  const a = state.inbox.find(x => x.appId === appId); if (!a) return;
+  const remarks = prompt(`Enter remarks for ${decision}:`); if (remarks === null) return;
+  const me = state.me;
+  const upd = { history: arrayUnion({ at: new Date().toISOString(), by: me.erp, byName: me.name, action: decision, remarks: remarks.slice(0, 300) }),
+                chain: arrayUnion(me.erp), updatedAt: serverTimestamp() };
+  try {
+    if (decision === 'Recommend') {
+      const next = me.forwardsTo;
+      if (!next || next === 'NONE') throw new Error('No next approver is configured for you. Contact the Admin.');
+      upd.status = 'Recommended'; upd.currentApprover = next;
+    } else if (decision === 'Return') upd.status = 'Returned';
+    else if (decision === 'Reject') upd.status = 'Rejected';
+    else if (decision === 'Approve') {
+      const theirs = await fetchAppsFor(a.erp), person = staffByErp(a.erp);
+      if (theirs && person) {
+        const bal = balanceFrom(theirs.filter(x => x.appId !== a.appId), person.clOpening || 0);
+        if (a.days > bal.remaining && !confirm(`${a.name} has only ${bal.remaining} CL day(s) left but this needs ${a.days}. Approve anyway?`)) return;
       }
+      upd.status = 'Approved';
     }
-    window.addEventListener('appinstalled', () => installBtn.classList.add('hidden'));
-
-    window.addEventListener('load', () => {
-      if (state.token && state.user) bootApp();
-      setupTabs();
-    });
-
-    function setupTabs() {
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
-          tab.classList.add('active');
-          document.getElementById(tab.getAttribute('data-target')).classList.remove('hidden');
-        });
-      });
-    }
-
-    async function api(action, payload = {}) {
-      payload.action = action;
-      payload.token = state.token;
-      payload._t = Date.now();
-      const res = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-      return await res.json();
-    }
-
-    async function submitLogin() {
-      const erp = document.getElementById('loginErp').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-      const err = document.getElementById('loginError');
-      const btn = document.getElementById('loginBtn');
-
-      if (!erp || !pass) {
-        err.innerText = "Please provide ERP and Password.";
-        err.style.display = "block";
-        return;
-      }
-      btn.disabled = true;
-      btn.innerText = "Verifying...";
-
-      try {
-        const res = await api('login', { erp, password: pass });
-        if (!res.success) throw new Error(res.error);
-
-        state.token = res.token;
-        state.user = res.user;
-        localStorage.setItem('apdcl_leave_token', res.token);
-        localStorage.setItem('apdcl_leave_user', JSON.stringify(res.user));
-
-        if (res.user.mustChange) {
-          document.getElementById('passChangeGate').classList.remove('hidden');
-        } else {
-          bootApp();
-        }
-      } catch (e) {
-        err.innerText = e.message;
-        err.style.display = "block";
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Sign In";
-      }
-    }
-
-    async function submitPasswordChange() {
-      const newPass = document.getElementById('newPass').value;
-      const msg = document.getElementById('changePassMsg');
-      if (newPass.length < 5) return msg.innerText = "Minimum length is 5 characters.";
-
-      const res = await api('changePassword', { newPassword: newPass });
-      if (res.success) {
-        document.getElementById('passChangeGate').classList.add('hidden');
-        bootApp();
-      } else {
-        msg.innerText = res.error;
-      }
-    }
-
-    function logout() {
-      localStorage.clear();
-      location.reload();
-    }
-
-    async function bootApp() {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('mainApp').classList.remove('hidden');
-      document.getElementById('headerUserName').innerText = state.user.name;
-      document.getElementById('headerUserRole').innerText = `${state.user.desig} (ERP: ${state.user.erp})`;
-
-      if (['JM', 'SMR', 'SDE', 'ADMIN'].includes(state.user.role)) {
-        document.getElementById('tabInboxBtn').classList.remove('hidden');
-        document.getElementById('proxyContainer').classList.remove('hidden');
-      }
-
-      await refreshData();
-      renderCalendar();
-    }
-
-    async function refreshData() {
-      const res = await api('getDashboardData');
-      if (!res.success) return logout();
-
-      document.getElementById('balOpening').innerText = res.balance.opening;
-      document.getElementById('balApproved').innerText = res.balance.approved;
-      document.getElementById('balPending').innerText = res.balance.pending;
-      document.getElementById('balRemaining').innerText = res.balance.remaining;
-
-      state.holidays = {};
-      res.holidays.forEach(h => state.holidays[h.date] = h);
-
-      if (res.staffList && res.staffList.length) {
-        state.staffList = res.staffList;
-        const sel = document.getElementById('staffSelect');
-        sel.innerHTML = '<option value="SELF">Myself (My Own Leave)</option>' +
-          res.staffList.map(s => `<option value="${s.erp}">${s.name} (${s.desig} - ${s.erp})</option>`).join('');
-      }
-
-      // Render My Leaves Tab
-      const hist = document.getElementById('historyList');
-      hist.innerHTML = res.myLeaves.length ? res.myLeaves.map(app => `
-        <div class="item-card">
-          <div class="item-top">
-            <span style="font-weight:700; font-size:13px; color:var(--primary);">${app.appId}</span>
-            <span class="badge badge-${app.status}">${app.status}</span>
-          </div>
-          <div style="font-size:13px; font-weight:600;">📅 ${app.from} to ${app.to} (${app.days} days)</div>
-          <div style="font-size:12px; color:var(--text-muted);">${app.reason}</div>
-          
-          ${app.attachmentUrl ? `
-            <div style="margin: 6px 0;">
-              <a href="${app.attachmentUrl}" target="_blank" style="display:inline-block; background:#e0f2fe; color:#0369a1; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;">
-                📄 View Attached PDF / Doc ↗
-              </a>
-            </div>
-          ` : ''}
-
-          ${(app.status === 'Applied' || app.status === 'Recommended') ? 
-            `<button class="btn btn-danger btn-sm" style="margin-top:6px;" onclick="cancelApp('${app.appId}')">Cancel Leave</button>` : ''}
-        </div>
-      `).join('') : '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No leave applications found.</div>';
-
-      // Render Inbox Tab
-      const inbox = document.getElementById('inboxList');
-      document.getElementById('inboxBadge').innerText = res.pendingForMe.length;
-      inbox.innerHTML = res.pendingForMe.length ? res.pendingForMe.map(app => `
-        <div class="item-card">
-          <div class="item-top">
-            <div>
-              <div style="font-weight:700; font-size:14px;">${app.name}</div>
-              <div style="font-size:11px; color:var(--text-muted);">ERP: ${app.erp}</div>
-            </div>
-            <span class="badge badge-${app.status}">${app.status}</span>
-          </div>
-          <div style="font-size:13px; font-weight:600; margin-top:4px;">📅 ${app.from} to ${app.to} (${app.days} days)</div>
-          <div style="font-size:12px; color:var(--text-muted);">${app.reason}</div>
-          
-          ${app.attachmentUrl ? `
-            <div style="margin: 6px 0;">
-              <a href="${app.attachmentUrl}" target="_blank" style="display:inline-block; background:#e0f2fe; color:#0369a1; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;">
-                📄 View Attached PDF / Document ↗
-              </a>
-            </div>
-          ` : ''}
-
-          ${app.warning ? `<div style="font-size:11px; color:var(--danger); font-weight:600;">⚠️ ${app.warning}</div>` : ''}
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            ${state.user.role === 'SDE' ? `
-              <button class="btn btn-success btn-sm" onclick="handleDecision('${app.appId}', 'Approve')">Approve</button>
-              <button class="btn btn-danger btn-sm" onclick="handleDecision('${app.appId}', 'Reject')">Reject</button>
-            ` : `
-              <button class="btn btn-success btn-sm" onclick="handleDecision('${app.appId}', 'Recommend')">Forward</button>
-              <button class="btn btn-danger btn-sm" onclick="handleDecision('${app.appId}', 'Return')">Return</button>
-            `}
-          </div>
-        </div>
-      `).join('') : '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No pending actions for you.</div>';
-    }
-
-    function onTargetStaffChanged() {
-      const selectedErp = document.getElementById('staffSelect').value;
-      if (selectedErp === 'SELF') {
-        refreshData();
-      } else {
-        const staff = state.staffList.find(s => s.erp === selectedErp);
-        if (staff) {
-          const approverSel = document.getElementById('approverSelect');
-          if (staff.forwardsTo && staff.forwardsTo !== 'NONE') {
-            approverSel.value = staff.forwardsTo;
-          } else {
-            approverSel.value = 'DEFAULT';
-          }
-        }
-      }
-    }
-
-    // ==========================================
-    // PDF & IMAGE ATTACHMENT HANDLER
-    // ==========================================
-    function handleFileSelected(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      state.attachmentMime = file.type;
-
-      // Handle PDF
-      if (file.type === 'application/pdf') {
-        if (file.size > 5 * 1024 * 1024) {
-          alert("PDF file size must be under 5MB.");
-          event.target.value = '';
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          state.attachmentBase64 = e.target.result;
-          document.getElementById('pdfFileName').innerText = `${file.name} (${Math.round(file.size/1024)} KB)`;
-          document.getElementById('pdfPreviewBadge').classList.remove('hidden');
-          document.getElementById('imgPreview').classList.add('hidden');
-          document.getElementById('previewArea').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-        return;
-      }
-
-      // Handle Image (with compression)
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          const maxDim = 1200;
-
-          if (width > height && width > maxDim) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          } else if (height > maxDim) {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          state.attachmentBase64 = canvas.toDataURL('image/jpeg', 0.7);
-          state.attachmentMime = 'image/jpeg';
-          document.getElementById('imgPreview').src = state.attachmentBase64;
-          document.getElementById('imgPreview').classList.remove('hidden');
-          document.getElementById('pdfPreviewBadge').classList.add('hidden');
-          document.getElementById('previewArea').classList.remove('hidden');
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function removeAttachment() {
-      state.attachmentBase64 = null;
-      state.attachmentMime = null;
-      document.getElementById('attachFile').value = '';
-      document.getElementById('previewArea').classList.add('hidden');
-    }
-
-    // ==========================================
-    // AI FORMAL APPLICATION GENERATOR
-    // ==========================================
-    let generatedAiText = "";
-
-    function generateAiApplication() {
-      const start = state.selectedStart;
-      const end = state.selectedEnd || state.selectedStart;
-      const days = state.workingDays;
-
-      if (!start) return alert("Please select leave dates on the calendar first.");
-
-      const targetErp = document.getElementById('staffSelect') ? document.getElementById('staffSelect').value : 'SELF';
-      let applicantName = state.user.name;
-      let applicantDesig = state.user.desig;
-      let applicantErp = state.user.erp;
-
-      if (targetErp !== 'SELF') {
-        const target = state.staffList.find(s => s.erp === targetErp);
-        if (target) {
-          applicantName = target.name;
-          applicantDesig = target.desig;
-          applicantErp = target.erp;
-        }
-      }
-
-      const inputReason = document.getElementById('applyReason').value.trim() || "urgent domestic affairs";
-      const todayStr = Utilities_formatToday();
-
-      generatedAiText = 
-`To,
-The Sub-Divisional Engineer (Electrical),
-Goalpara Electrical Sub-Division, APDCL,
-Goalpara, Assam.
-
-[Through Proper Channel]
-
-Subject: Application for Casual Leave (CL) for ${days} Day(s).
-
-Sir,
-With due respect, I have the honour to state that I am unable to attend my official duties from ${start} to ${end} (${days} working day(s)) on account of ${inputReason}.
-
-I therefore earnestly request you kindly to grant me Casual Leave for the aforementioned period.
-
-Yours faithfully,
-
-Name: ${applicantName}
-Designation: ${applicantDesig}
-ERP ID: ${applicantErp}
-Goalpara Electrical Sub-Division, APDCL
-Date: ${todayStr}`;
-
-      document.getElementById('aiGeneratedText').innerText = generatedAiText;
-      document.getElementById('aiLetterModal').classList.remove('hidden');
-    }
-
-    function closeAiModal() {
-      document.getElementById('aiLetterModal').classList.add('hidden');
-    }
-
-    function useAiLetterText() {
-      document.getElementById('applyReason').value = generatedAiText;
-      closeAiModal();
-    }
-
-    function copyAiLetter() {
-      navigator.clipboard.writeText(generatedAiText).then(() => {
-        alert("Formal application copied to clipboard!");
-      });
-    }
-
-    function Utilities_formatToday() {
-      const d = new Date();
-      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-    }
-
-    // ==========================================
-    // CALENDAR ENGINE
-    // ==========================================
-    function navMonth(delta) {
-      state.viewDate.setMonth(state.viewDate.getMonth() + delta);
-      renderCalendar();
-    }
-
-    function checkDateClassification(dObj) {
-      const dStr = dObj.toISOString().slice(0, 10);
-      const dow = dObj.getDay();
-      const satIdx = Math.ceil(dObj.getDate() / 7);
-
-      if (dow === 0) return { type: 'weekend', label: 'Sunday (Weekly Off)' };
-      if (dow === 6 && (satIdx === 2 || satIdx === 4)) {
-        return { type: 'weekend', label: `${satIdx === 2 ? '2nd' : '4th'} Saturday Holiday` };
-      }
-      if (state.holidays[dStr]) {
-        const h = state.holidays[dStr];
-        if (h.type === 'Holiday') return { type: 'holiday', label: `Holiday: ${h.name}` };
-        if (h.type === 'Restricted') return { type: 'rh', label: `Restricted Holiday: ${h.name}` };
-        if (h.type === 'Half Holiday') return { type: 'rh', label: h.name };
-      }
-      return { type: 'work', label: 'Working Day' };
-    }
-
-    function renderCalendar() {
-      const grid = document.getElementById('calGrid');
-      grid.innerHTML = '';
-
-      const y = state.viewDate.getFullYear();
-      const m = state.viewDate.getMonth();
-      const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      document.getElementById('calMonthTitle').innerText = `${monthNames[m]} ${y}`;
-
-      const firstDow = new Date(y, m, 1).getDay();
-      const daysCount = new Date(y, m + 1, 0).getDate();
-      const todayStr = new Date().toISOString().slice(0, 10);
-
-      for (let i = 0; i < firstDow; i++) {
-        const empty = document.createElement('div');
-        empty.className = 'cal-cell empty';
-        grid.appendChild(empty);
-      }
-
-      for (let d = 1; d <= daysCount; d++) {
-        const dObj = new Date(y, m, d);
-        const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const cell = document.createElement('div');
-        cell.className = 'cal-cell';
-        cell.innerText = d;
-
-        const info = checkDateClassification(dObj);
-        if (info.type === 'holiday') cell.classList.add('holiday');
-        if (info.type === 'weekend') cell.classList.add('weekend');
-        if (info.type === 'rh') cell.classList.add('rh');
-        if (dStr === todayStr) cell.classList.add('today');
-
-        if (state.selectedStart === dStr || state.selectedEnd === dStr) cell.classList.add('selected');
-        if (state.selectedStart && state.selectedEnd && dStr > state.selectedStart && dStr < state.selectedEnd) {
-          cell.classList.add('in-range');
-        }
-
-        cell.title = `${dStr}: ${info.label}`;
-        cell.onmouseenter = () => updateInspection(dStr, info.label);
-        cell.onclick = () => onCellSelect(dStr, info.label);
-
-        grid.appendChild(cell);
-      }
-    }
-
-    function updateInspection(dateStr, label) {
-      document.getElementById('dayInspectionBar').innerText = `📅 ${dateStr} — ${label}`;
-    }
-
-    function onCellSelect(dateStr, label) {
-      updateInspection(dateStr, label);
-
-      if (!state.selectedStart || (state.selectedStart && state.selectedEnd)) {
-        state.selectedStart = dateStr;
-        state.selectedEnd = null;
-      } else {
-        if (dateStr < state.selectedStart) {
-          state.selectedStart = dateStr;
-          state.selectedEnd = null;
-        } else {
-          state.selectedEnd = dateStr;
-        }
-      }
-      calcRange();
-      renderCalendar();
-    }
-
-    function calcRange() {
-      const box = document.getElementById('calcBox');
-      const alert = document.getElementById('adjacencyAlert');
-      const submitBtn = document.getElementById('submitLeaveBtn');
-      alert.classList.add('hidden');
-
-      if (!state.selectedStart) {
-        box.classList.add('hidden');
-        return;
-      }
-
-      const endStr = state.selectedEnd || state.selectedStart;
-      document.getElementById('rangeText').innerText = `${state.selectedStart} to ${endStr}`;
-
-      let cur = new Date(state.selectedStart);
-      const end = new Date(endStr);
-      let workCount = 0;
-
-      while (cur <= end) {
-        const info = checkDateClassification(cur);
-        if (info.type !== 'holiday' && info.type !== 'weekend') {
-          workCount++;
-        }
-        cur.setDate(cur.getDate() + 1);
-      }
-
-      state.workingDays = workCount;
-      document.getElementById('countedDaysText').innerText = workCount;
-      box.classList.remove('hidden');
-
-      if (workCount < 1 || workCount > 3) {
-        alert.innerText = "Casual Leave can only be availed for 1 to 3 working days.";
-        alert.classList.remove('hidden');
-        submitBtn.disabled = true;
-        return;
-      }
-
-      const prevDay = new Date(state.selectedStart);
-      prevDay.setDate(prevDay.getDate() - 1);
-      const nextDay = new Date(endStr);
-      nextDay.setDate(nextDay.getDate() + 1);
-
-      const pInfo = checkDateClassification(prevDay);
-      const nInfo = checkDateClassification(nextDay);
-
-      state.warningText = "";
-      if (pInfo.type !== 'work' || nInfo.type !== 'work') {
-        state.warningText = "CL is adjacent to Sunday/Holiday/2nd or 4th Saturday.";
-        alert.innerText = `Note: ${state.warningText} (Approver will review this note).`;
-        alert.classList.remove('hidden');
-      }
-
-      submitBtn.disabled = false;
-    }
-
-    // ==========================================
-    // SUBMISSION & DECISIONS
-    // ==========================================
-    async function submitApplication() {
-      const reason = document.getElementById('applyReason').value.trim();
-      const btn = document.getElementById('submitLeaveBtn');
-      if (!reason) return alert("Please specify the reason for absence.");
-
-      const targetErp = document.getElementById('staffSelect') ? document.getElementById('staffSelect').value : 'SELF';
-      const approverChoice = document.getElementById('approverSelect') ? document.getElementById('approverSelect').value : 'DEFAULT';
-
-      btn.disabled = true;
-      btn.innerText = "Submitting with attachment...";
-
-      const payload = {
-        targetErp: targetErp === 'SELF' ? state.user.erp : targetErp,
-        forwardToErp: approverChoice === 'DEFAULT' ? null : approverChoice,
-        from: state.selectedStart,
-        to: state.selectedEnd || state.selectedStart,
-        daysCounted: state.workingDays,
-        reason: reason,
-        warning: state.warningText,
-        attachmentData: state.attachmentBase64,
-        fileType: state.attachmentMime
-      };
-
-      const res = await api('applyCL', payload);
-      if (res.success) {
-        alert("Leave application submitted successfully!");
-        state.selectedStart = null;
-        state.selectedEnd = null;
-        removeAttachment();
-        document.getElementById('applyReason').value = '';
-        document.getElementById('calcBox').classList.add('hidden');
-        await refreshData();
-        renderCalendar();
-      } else {
-        alert(res.error);
-      }
-      btn.disabled = false;
-      btn.innerText = "Submit Application";
-    }
-
-    async function handleDecision(appId, action) {
-      const remarks = prompt(`Enter remarks for ${action}:`) || "";
-      const res = await api('takeAction', { appId, action, remarks });
-      if (res.success) {
-        await refreshData();
-      } else {
-        alert(res.error);
-      }
-    }
-
-    async function cancelApp(appId) {
-      if (!confirm("Are you sure you want to cancel this leave application?")) return;
-      const res = await api('cancelApplication', { appId });
-      if (res.success) {
-        await refreshData();
-      } else {
-        alert(res.error);
-      }
-    }
-  </script>
+    await updateDoc(doc(db, 'applications', appId), upd);
+    await refreshData();
+  } catch (e) { alert(friendlyError(e)); }
+}
+async function cancelApp(appId) {
+  if (!confirm('Cancel this leave application?')) return;
+  try {
+    await updateDoc(doc(db, 'applications', appId), { status: 'Cancelled', updatedAt: serverTimestamp(),
+      history: arrayUnion({ at: new Date().toISOString(), by: state.me.erp, byName: state.me.name, action: 'Cancel', remarks: 'Cancelled by applicant' }) });
+    await refreshData();
+  } catch (e) { alert(friendlyError(e)); }
+}
+
+/* ---------------- records / CSV ---------------- */
+async function loadRecords() {
+  try { state.allApps = (await getDocs(collection(db, 'applications'))).docs.map(d => d.data()).sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0)); }
+  catch (e) { alert(friendlyError(e)); }
+  renderRecords();
+}
+function filteredRecords() {
+  const st = $('recStatus').value, q = $('recSearch').value.trim().toLowerCase();
+  return state.allApps.filter(a => (!st || a.status === st) && (!q || [a.name, a.erp, a.appId].some(v => String(v).toLowerCase().includes(q))));
+}
+const nameOf = (erp) => { const s = staffByErp(erp); return s ? s.name : erp; };
+function renderRecords() {
+  $('recBody').innerHTML = filteredRecords().map(a => `<tr><td>${esc(a.appId)}</td><td>${esc(a.name)}</td><td>${esc(a.erp)}</td><td>${esc(fmtDate(a.fromDate))}</td><td>${esc(fmtDate(a.toDate))}</td><td>${esc(a.days)}</td><td><span class="badge badge-${esc(a.status)}">${esc(a.status)}</span></td><td>${['Applied', 'Recommended'].includes(a.status) ? esc(nameOf(a.currentApprover)) : ''}</td></tr>`).join('')
+    || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No records.</td></tr>';
+}
+function csvCell(v) { let s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }
+function downloadCsv() {
+  const rows = [['App ID', 'ERP ID', 'Name', 'Designation', 'Leave Type', 'From', 'To', 'Days', 'Status', 'Reason', 'Filed By', 'Applied On', 'Decision Trail']];
+  filteredRecords().forEach(a => rows.push([a.appId, a.erp, a.name, a.desig, a.leaveType, fmtDate(a.fromDate), fmtDate(a.toDate), a.days, a.status, a.reason, a.createdByName,
+    a.createdAtMs ? new Date(a.createdAtMs).toLocaleString('en-IN') : '', (a.history || []).map(h => `${h.byName || h.by} ${h.action}${h.remarks ? ' (' + h.remarks + ')' : ''}`).join(' > ')]));
+  const blob = new Blob(['\ufeff' + rows.map(r => r.map(csvCell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `leave-records-${ymd(new Date())}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+$('recStatus').addEventListener('change', renderRecords); $('recSearch').addEventListener('input', renderRecords);
+
+/* ---------------- admin ---------------- */
+function renderAdmin() {
+  $('empBody').innerHTML = state.staff.map(s => `<tr><td>${esc(s.erp)}</td><td>${esc(s.name)}</td><td>${esc(s.desig)}</td><td>${esc(s.role)}</td><td>${esc(s.forwardsTo === 'NONE' ? '—' : nameOf(s.forwardsTo))}</td><td>${esc(s.clOpening)}</td>
+    <td>${!s.active ? 'Inactive' : s.mustChange ? '<b style="color:#b45309;">Not activated</b>' : 'Active'}</td><td><button class="btn btn-ghost btn-sm" data-act="editEmp" data-id="${esc(s.erp)}">Edit</button></td></tr>`).join('');
+  loadHolidaysAdmin();
+}
+async function loadHolidaysAdmin() {
+  const snap = await getDocs(collection(db, 'holidays'));
+  const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => a.date.localeCompare(b.date) || a.type.localeCompare(b.type));
+  $('holBody').innerHTML = rows.map(h => `<tr><td>${esc(fmtDate(h.date))}</td><td>${esc(h.name)}</td><td>${esc(h.type)}</td><td><button class="btn btn-danger btn-sm" data-act="delHol" data-id="${esc(h.id)}">Delete</button></td></tr>`).join('');
+}
+async function addHoliday() {
+  const date = $('holDate').value, name = $('holName').value.trim(), type = $('holType').value;
+  if (!date || !name) return alert('Enter the date and the holiday name.');
+  try { await setDoc(doc(db, 'holidays', `${date}_${Date.now().toString(36)}`), { date, name, type }); $('holName').value = ''; await loadHolidaysAdmin(); await refreshData(); renderCalendar(); }
+  catch (e) { alert(friendlyError(e)); }
+}
+async function deleteHoliday(id) {
+  if (!confirm('Delete this holiday entry?')) return;
+  try { await deleteDoc(doc(db, 'holidays', id)); await loadHolidaysAdmin(); await refreshData(); renderCalendar(); } catch (e) { alert(friendlyError(e)); }
+}
+function openEmployeeForm(erp) {
+  state.editErp = erp; $('empMsg').textContent = '';
+  const s = erp ? staffByErp(erp) : null;
+  $('empModalTitle').textContent = s ? `Edit ${s.name}` : 'Add employee';
+  $('empErp').value = s ? s.erp : ''; $('empErp').disabled = !!s;
+  $('empName').value = s ? s.name : ''; $('empDesig').value = s ? s.desig : '';
+  $('empRole').value = s ? s.role : 'EMPLOYEE'; $('empOpen').value = s ? (s.clOpening || 0) : 15; $('empActive').value = !s || s.active ? '1' : '0';
+  $('empFwd').innerHTML = '<option value="NONE">— none —</option>' + state.staff.filter(x => x.active && APPROVERS.includes(x.role) && x.erp !== erp)
+    .map(x => `<option value="${esc(x.erp)}">${esc(x.name)} (${esc(x.desig)})</option>`).join('');
+  $('empFwd').value = s ? s.forwardsTo : '';
+  $('empHint').textContent = s ? '' : 'The new login password will be the ERP ID; the person must change it on first sign-in.';
+  $('empModal').classList.remove('hidden');
+}
+async function createAuthUser(erp) {
+  const sec = initializeApp(firebaseConfig, 'sec' + Date.now());
+  try { const a = getAuth(sec); const cred = await createUserWithEmailAndPassword(a, emailFor(erp), erp); const uid = cred.user.uid; await signOut(a); return uid; }
+  finally { await deleteApp(sec); }
+}
+async function saveEmployee() {
+  const msg = $('empMsg'); msg.textContent = '';
+  const isNew = state.editErp == null, erp = $('empErp').value.trim();
+  const data = { name: $('empName').value.trim().toUpperCase(), desig: $('empDesig').value.trim().toUpperCase(), role: $('empRole').value,
+    forwardsTo: $('empFwd').value || 'NONE', clOpening: Number($('empOpen').value) || 0, active: $('empActive').value === '1' };
+  if (!data.name || !data.desig) { msg.textContent = 'Name and designation are required.'; return; }
+  try {
+    if (isNew) {
+      if (!/^\d{6,10}$/.test(erp)) { msg.textContent = 'ERP ID must be 6–10 digits.'; return; }
+      if ((await getDoc(doc(db, 'employees', erp))).exists()) { msg.textContent = 'This ERP ID already exists.'; return; }
+      const uid = await createAuthUser(erp);
+      const b = writeBatch(db);
+      b.set(doc(db, 'accounts', uid), { erp });
+      b.set(doc(db, 'employees', erp), { erp, ...data, mustChange: true });
+      await b.commit();
+    } else await updateDoc(doc(db, 'employees', state.editErp), data);
+    $('empModal').classList.add('hidden'); await loadStaff(); renderAdmin();
+  } catch (e) { msg.textContent = friendlyError(e); }
+}
+
+/* ---------------- letter draft ---------------- */
+let letterText = '';
+function draftLetter() {
+  if (!state.selStart) return alert('Please select leave dates on the calendar first.');
+  const t = targetPerson() || state.me, end = state.selEnd || state.selStart;
+  const reason = $('applyReason').value.trim() || 'urgent domestic affairs';
+  letterText = `To,\nThe Sub-Divisional Engineer (Electrical),\nGoalpara Electrical Sub-Division, APDCL,\nGoalpara, Assam.\n\n[Through Proper Channel]\n\nSubject: Application for Casual Leave (CL) for ${state.days} Day(s).\n\nSir,\nWith due respect, I have the honour to state that I am unable to attend my official duties from ${fmtDate(state.selStart)} to ${fmtDate(end)} (${state.days} working day(s)) on account of ${reason}.\n\nI therefore earnestly request you kindly to grant me Casual Leave for the aforementioned period.\n\nYours faithfully,\n\nName: ${t.name}\nDesignation: ${t.desig}\nERP ID: ${t.erp}\nGoalpara Electrical Sub-Division, APDCL\nDate: ${fmtDate(ymd(new Date()))}`;
+  $('aiGeneratedText').textContent = letterText; $('aiLetterModal').classList.remove('hidden');
+}
+
+/* ---------------- events ---------------- */
+$('loginBtn').addEventListener('click', submitLogin);
+$('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitLogin(); });
+$('passSaveBtn').addEventListener('click', submitPasswordChange);
+$('passCancelBtn').addEventListener('click', () => $('passChangeGate').classList.add('hidden'));
+$('passSignOutBtn').addEventListener('click', logout);
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const id = el.dataset.id;
+  const acts = {
+    logout, changePass: () => openPasswordModal(false),
+    prevMonth: () => { state.viewDate.setMonth(state.viewDate.getMonth() - 1); renderCalendar(); },
+    nextMonth: () => { state.viewDate.setMonth(state.viewDate.getMonth() + 1); renderCalendar(); },
+    draftLetter, closeLetter: () => $('aiLetterModal').classList.add('hidden'),
+    useLetter: () => { $('applyReason').value = letterText; $('aiLetterModal').classList.add('hidden'); },
+    copyLetter: () => navigator.clipboard.writeText(letterText).then(() => alert('Copied!')),
+    removeAttach, submitApp: submitApplication, viewAtt: () => viewAttachment(id), cancel: () => cancelApp(id),
+    decide: () => handleDecision(id, el.dataset.decision), downloadCsv,
+    addEmp: () => openEmployeeForm(null), editEmp: () => openEmployeeForm(id), saveEmp: saveEmployee,
+    closeEmp: () => $('empModal').classList.add('hidden'), addHol: addHoliday, delHol: () => deleteHoliday(id)
+  };
+  if (acts[el.dataset.act]) acts[el.dataset.act]();
+});
+
+/* ---------------- PWA ---------------- */
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js?v=2').catch(() => {});
+const installBtn = $('installAppBtn'); let deferredPrompt = null;
+if (!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true)) {
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.classList.remove('hidden'); });
+  installBtn.addEventListener('click', async () => { if (!deferredPrompt) return; deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') installBtn.classList.add('hidden'); deferredPrompt = null; });
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) { installBtn.textContent = '📲 Install: tap Share → Add to Home Screen'; installBtn.classList.remove('hidden'); installBtn.onclick = () => alert('Tap the Share icon in Safari and choose "Add to Home Screen".'); }
+}
+window.addEventListener('appinstalled', () => installBtn.classList.add('hidden'));
+</script>
 </body>
 </html>
